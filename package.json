@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "make-icons": "npx electron-icon-maker --input=./assets/icon.png --output=./assets",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/icon.ico --prune=true --out=release-builds",
     "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --prune=true --out=release-builds"
