@@ -1,48 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <title>Contador de Ganancias de Perfumes</title>
     <style>
-        /* --- ESTILOS ACTUALIZADOS: Colores blanco y negro sobrios --- */
+        /* ============================================================
+        NUEVO: VARIABLES DE TEMA (MODO CLARO Y OSCURO)
+        ============================================================
+        */
         :root {
-            --color-primary: #000000;
-            --color-primary-hover: #1a1a1a;
-            --color-primary-light: rgba(0, 0, 0, 0.08);
-            --color-background: #ffffff;
-            --color-surface: #f5f5f5;
-            --color-surface-hover: #e8e8e8;
-            --color-border: #d0d0d0;
-            --color-text-light: #1a1a1a;
-            --color-text-muted: #666666;
-            --color-danger: #cc0000;
-            --color-danger-hover: #990000;
-            --color-warning: #ff9900;
-            --color-warning-hover: #cc7700;
-            --color-success: #00aa00;
-            --color-success-light: rgba(0, 170, 0, 0.1);
-            
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
-            
             --radius-sm: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
             --radius-xl: 16px;
+
+            --shadow-sm: 0 1px 2px 0 var(--color-shadow);
+            --shadow-md: 0 4px 6px -1px var(--color-shadow-light);
+            --shadow-lg: 0 10px 15px -3px var(--color-shadow-light);
+            --shadow-xl: 0 20px 25px -5px var(--color-shadow-strong);
+            
+            --transition-fast: all 0.2s ease;
         }
+
+        /* --- TEMA CLARO (Tu estilo original "blanco y negro sobrios") --- */
+        html[data-theme="light"] {
+            --color-primary: #000000;
+            --color-primary-text: #ffffff;
+            --color-primary-hover: #1a1a1a;
+            --color-primary-light-bg: rgba(0, 0, 0, 0.08);
+
+            --color-background: #ffffff;
+            --color-surface: #f5f5f5;
+            --color-surface-hover: #e8e8e8;
+            --color-border: #d0d0d0;
+            
+            --color-text-light: #1a1a1a;
+            --color-text-muted: #666666;
+            
+            --color-danger: #cc0000;
+            --color-danger-hover: #990000;
+            --color-danger-text: #ffffff;
+            
+            --color-warning: #ff9900;
+            --color-warning-hover: #cc7700;
+            --color-warning-text: #000000;
+
+            --color-success: #00aa00;
+            --color-success-light-bg: rgba(0, 170, 0, 0.1);
+
+            --color-shadow: rgba(0, 0, 0, 0.1);
+            --color-shadow-light: rgba(0, 0, 0, 0.15);
+            --color-shadow-strong: rgba(0, 0, 0, 0.25);
+        }
+
+        /* --- TEMA OSCURO (Nuevo) --- */
+        html[data-theme="dark"] {
+            --color-primary: #ffffff;
+            --color-primary-text: #000000;
+            --color-primary-hover: #e0e0e0;
+            --color-primary-light-bg: rgba(255, 255, 255, 0.1);
+
+            --color-background: #0f0f0f;
+            --color-surface: #1e1e1e;
+            --color-surface-hover: #2c2c2c;
+            --color-border: #383838;
+            
+            --color-text-light: #f5f5f5;
+            --color-text-muted: #888888;
+            
+            --color-danger: #ff4d4d;
+            --color-danger-hover: #ff2222;
+            --color-danger-text: #ffffff;
+            
+            --color-warning: #ffb84d;
+            --color-warning-hover: #ffa31a;
+            --color-warning-text: #000000;
+
+            --color-success: #33dd33;
+            --color-success-light-bg: rgba(51, 221, 51, 0.1);
+
+            --color-shadow: rgba(0, 0, 0, 0.2);
+            --color-shadow-light: rgba(0, 0, 0, 0.3);
+            --color-shadow-strong: rgba(0, 0, 0, 0.4);
+        }
+        
+        /* ============================================================
+           ESTILOS ORIGINALES (MODIFICADOS PARA USAR VARIABLES)
+           ============================================================
+        */
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #ffffff;
-            color: var(--color-text-light);
+            background: var(--color-background); /* MODIFICADO */
+            color: var(--color-text-light); /* MODIFICADO */
             -webkit-app-region: drag;
             padding-top: 50px;
             min-height: 100vh;
             line-height: 1.6;
+            transition: var(--transition-fast);
+            transition-property: background-color, color;
         }
         
         .container { 
@@ -53,33 +111,39 @@
         }
         
         .main-card {
-            background: var(--color-background);
+            background: var(--color-background); /* MODIFICADO */
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-xl);
             overflow: hidden;
-            border: 1px solid var(--color-border);
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color;
         }
         
         .app-header {
-            background: #ffffff;
+            background: var(--color-background); /* MODIFICADO */
             padding: 30px 40px;
             display: flex;
             align-items: center;
             gap: 24px;
-            border-bottom: 2px solid var(--color-border);
+            border-bottom: 2px solid var(--color-border); /* MODIFICADO */
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color;
+            position: relative; /* Añadido para el toggle */
         }
         
-        /* Agregar estilos para el logo en la esquina superior izquierda */
         .logo-container {
             width: 120px;
             height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--color-surface);
-            border: 2px solid var(--color-border);
+            background: var(--color-surface); /* MODIFICADO */
+            border: 2px solid var(--color-border); /* MODIFICADO */
             border-radius: var(--radius-lg);
             overflow: hidden;
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color;
         }
         
         .logo-container img {
@@ -90,7 +154,7 @@
         }
         
         .logo-container.empty {
-            color: var(--color-text-muted);
+            color: var(--color-text-muted); /* MODIFICADO */
             font-size: 32px;
         }
         
@@ -98,26 +162,86 @@
             flex: 1;
         }
         
-        .app-header h1 { font-size: 28px; font-weight: 700; color: var(--color-text-light); margin: 0; letter-spacing: -0.5px; }
-        .app-header p { color: var(--color-text-muted); margin-top: 8px; font-size: 14px; }
+        .app-header h1 { 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: var(--color-text-light); /* MODIFICADO */
+            margin: 0; 
+            letter-spacing: -0.5px; 
+        }
+        .app-header p { 
+            color: var(--color-text-muted); /* MODIFICADO */
+            margin-top: 8px; 
+            font-size: 14px; 
+        }
+
+        /* --- NUEVO: ESTILOS PARA EL INTERRUPTOR DE TEMA --- */
+        .theme-toggle {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-app-region: no-drag;
+            transition: var(--transition-fast);
+        }
+        .theme-toggle:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-text-muted);
+        }
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            color: var(--color-text-muted);
+            transition: var(--transition-fast);
+        }
+        .theme-toggle:hover svg {
+            color: var(--color-text-light);
+        }
+        .theme-toggle .icon-sun { display: none; }
+        .theme-toggle .icon-moon { display: block; }
+        html[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+        html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         
-        .tab-menu { display: flex; background: var(--color-surface); padding: 0; border-bottom: 1px solid var(--color-border); gap: 4px; }
+        .tab-menu { 
+            display: flex; 
+            background: var(--color-surface); /* MODIFICADO */
+            padding: 0; 
+            border-bottom: 1px solid var(--color-border); /* MODIFICADO */
+            gap: 4px; 
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color;
+        }
         
         .tab-button {
             flex: 1; background: transparent; border: none; padding: 16px 20px; cursor: pointer;
-            font-size: 14px; font-weight: 500; color: var(--color-text-muted);
-            border-bottom: 3px solid transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px; font-weight: 500; color: var(--color-text-muted); /* MODIFICADO */
+            border-bottom: 3px solid transparent; 
+            transition: var(--transition-fast);
             position: relative; overflow: hidden;
         }
         
         .tab-button::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--color-primary-light); opacity: 0; transition: opacity 0.3s ease;
+            background: var(--color-primary-light-bg); /* MODIFICADO */
+            opacity: 0; 
+            transition: opacity 0.3s ease;
         }
         
         .tab-button:hover::before { opacity: 1; }
-        .tab-button:hover { color: var(--color-text-light); }
-        .tab-button.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
+        .tab-button:hover { color: var(--color-text-light); } /* MODIFICADO */
+        .tab-button.active { 
+            color: var(--color-primary); /* MODIFICADO */
+            border-bottom-color: var(--color-primary); /* MODIFICADO */
+            font-weight: 600; 
+        }
         .tab-button.active::before { opacity: 1; }
         
         .tab-content { display: none; padding: 40px; animation: fadeIn 0.4s ease; }
@@ -126,43 +250,72 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         h2 {
-            font-size: 20px; font-weight: 600; color: var(--color-text-light);
-            margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--color-border);
+            font-size: 20px; font-weight: 600; color: var(--color-text-light); /* MODIFICADO */
+            margin-bottom: 24px; padding-bottom: 12px; 
+            border-bottom: 2px solid var(--color-border); /* MODIFICADO */
+            transition: var(--transition-fast);
+            transition-property: color, border-color;
         }
         
-        h3 { font-size: 16px; font-weight: 600; color: var(--color-text-light); margin: 32px 0 16px 0; }
+        h3 { 
+            font-size: 16px; 
+            font-weight: 600; 
+            color: var(--color-text-light); /* MODIFICADO */
+            margin: 32px 0 16px 0; 
+        }
         
-        form { background: var(--color-surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
+        form { 
+            background: var(--color-surface); /* MODIFICADO */
+            padding: 24px; 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color;
+        }
         
         form label {
             display: block; margin-top: 16px; margin-bottom: 8px;
-            font-weight: 500; font-size: 14px; color: var(--color-text-light);
+            font-weight: 500; font-size: 14px; 
+            color: var(--color-text-light); /* MODIFICADO */
         }
         
         form label:first-of-type { margin-top: 0; }
         
         form input, form select {
             width: 100%; padding: 12px 16px; border-radius: var(--radius-md);
-            border: 1px solid var(--color-border); background-color: var(--color-background);
-            color: var(--color-text-light); font-size: 14px; transition: all 0.2s ease; font-family: inherit;
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            background-color: var(--color-background); /* MODIFICADO */
+            color: var(--color-text-light); /* MODIFICADO */
+            font-size: 14px; 
+            transition: var(--transition-fast);
+            font-family: inherit;
         }
         
         form input:focus, form select:focus {
-            outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light);
+            outline: none; 
+            border-color: var(--color-primary); /* MODIFICADO */
+            box-shadow: 0 0 0 3px var(--color-primary-light-bg); /* MODIFICADO */
         }
         
-        form input:hover, form select:hover { border-color: var(--color-primary); }
+        form input:hover, form select:hover { 
+            border-color: var(--color-primary); /* MODIFICADO */
+        }
         
-        button { cursor: pointer; font-family: inherit; transition: all 0.2s ease; }
+        button { cursor: pointer; font-family: inherit; transition: var(--transition-fast); }
         
         button[type="submit"] {
             width: 100%; padding: 14px 24px; margin-top: 24px;
-            background: var(--color-primary);
-            color: white; border: none; border-radius: var(--radius-md);
+            background: var(--color-primary); /* MODIFICADO */
+            color: var(--color-primary-text); /* MODIFICADO */
+            border: none; border-radius: var(--radius-md);
             font-weight: 600; font-size: 15px; box-shadow: var(--shadow-md);
         }
         
-        button[type="submit"]:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); background: var(--color-primary-hover); }
+        button[type="submit"]:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-lg); 
+            background: var(--color-primary-hover); /* MODIFICADO */
+        }
         button[type="submit"]:active { transform: translateY(0); }
         button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         
@@ -170,103 +323,195 @@
         
         button.btn-editar, button.btn-eliminar {
             padding: 8px 16px; border: none; border-radius: var(--radius-sm);
-            font-size: 13px; font-weight: 500; transition: all 0.2s ease;
+            font-size: 13px; font-weight: 500; 
         }
         
-        button.btn-editar { background-color: var(--color-warning); color: #000000; }
-        button.btn-editar:hover { background-color: var(--color-warning-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        button.btn-editar { 
+            background-color: var(--color-warning); /* MODIFICADO */
+            color: var(--color-warning-text); /* MODIFICADO */
+        }
+        button.btn-editar:hover { 
+            background-color: var(--color-warning-hover); /* MODIFICADO */
+            transform: translateY(-1px); 
+            box-shadow: var(--shadow-sm); 
+        }
         
-        button.btn-eliminar { background-color: var(--color-danger); color: white; }
-        button.btn-eliminar:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        button.btn-eliminar { 
+            background-color: var(--color-danger); /* MODIFICADO */
+            color: var(--color-danger-text); /* MODIFICADO */
+        }
+        button.btn-eliminar:hover { 
+            background-color: var(--color-danger-hover); /* MODIFICADO */
+            transform: translateY(-1px); 
+            box-shadow: var(--shadow-sm); 
+        }
         
         button.btn-ver {
             padding: 8px 16px; border: none; border-radius: var(--radius-sm);
-            font-size: 13px; font-weight: 500; transition: all 0.2s ease;
-            background-color: var(--color-primary); color: white;
+            font-size: 13px; font-weight: 500;
+            background-color: var(--color-primary); /* MODIFICADO */
+            color: var(--color-primary-text); /* MODIFICADO */
         }
-        button.btn-ver:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        button.btn-ver:hover { 
+            background-color: var(--color-primary-hover); /* MODIFICADO */
+            transform: translateY(-1px); 
+            box-shadow: var(--shadow-sm); 
+        }
         
         button.btn-cancelar {
             width: 100%; padding: 12px 24px; margin-top: 12px;
-            background: var(--color-surface-hover); color: var(--color-text-muted);
-            border: none; border-radius: var(--radius-md); font-weight: 500; font-size: 15px;
+            background: var(--color-surface-hover); /* MODIFICADO */
+            color: var(--color-text-muted); /* MODIFICADO */
+            border: none; border-radius: var(--radius-md); 
+            font-weight: 500; font-size: 15px;
         }
-        button.btn-cancelar:hover { background: var(--color-border); color: var(--color-text-light); }
+        button.btn-cancelar:hover { 
+            background: var(--color-border); /* MODIFICADO */
+            color: var(--color-text-light); /* MODIFICADO */
+        }
 
         button.btn-adjuntar {
             width: 100%; padding: 12px 16px; margin-top: 8px;
-            background: var(--color-surface-hover); color: var(--color-text-muted);
-            border: 1px solid var(--color-border); border-radius: var(--radius-md);
+            background: var(--color-surface-hover); /* MODIFICADO */
+            color: var(--color-text-muted); /* MODIFICADO */
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            border-radius: var(--radius-md);
             font-weight: 500; font-size: 14px; text-align: left;
         }
-        button.btn-adjuntar:hover { background: var(--color-border); color: var(--color-text-light); }
+        button.btn-adjuntar:hover { 
+            background: var(--color-border); /* MODIFICADO */
+            color: var(--color-text-light); /* MODIFICADO */
+        }
         #nombre-adjunto, #edit-nombre-adjunto {
-            font-size: 12px; color: var(--color-text-muted); margin-top: 8px; display: block;
+            font-size: 12px; 
+            color: var(--color-text-muted); /* MODIFICADO */
+            margin-top: 8px; 
+            display: block; 
         }
         
-        .table-container { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-top: 24px; }
+        .table-container { 
+            overflow-x: auto; 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            margin-top: 24px; 
+            transition: border-color var(--transition-fast);
+        }
         
         table { width: 100%; border-collapse: collapse; }
-        thead { background: var(--color-surface); }
+        thead { 
+            background: var(--color-surface); /* MODIFICADO */
+            transition: background-color var(--transition-fast);
+        }
         
         th {
             padding: 16px 12px; text-align: left; font-weight: 600; font-size: 12px;
-            text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted);
-            border-bottom: 2px solid var(--color-border);
+            text-transform: uppercase; letter-spacing: 0.5px; 
+            color: var(--color-text-muted); /* MODIFICADO */
+            border-bottom: 2px solid var(--color-border); /* MODIFICADO */
+            transition: var(--transition-fast);
+            transition-property: color, border-color;
         }
         
         td {
-            padding: 16px 12px; border-bottom: 1px solid var(--color-border);
-            color: var(--color-text-light); font-size: 14px;
+            padding: 16px 12px; 
+            border-bottom: 1px solid var(--color-border); /* MODIFICADO */
+            color: var(--color-text-light); /* MODIFICADO */
+            font-size: 14px;
+            transition: var(--transition-fast);
+            transition-property: border-color, color;
         }
         
         tbody tr { transition: background-color 0.2s ease; }
-        tbody tr:hover { background-color: var(--color-surface); }
+        tbody tr:hover { 
+            background-color: var(--color-surface); /* MODIFICADO */
+        }
         tbody tr:last-child td { border-bottom: none; }
         
         .resumen { display: grid; gap: 16px; margin-bottom: 32px; }
         
         .resumen-card {
-            background: var(--color-surface); padding: 20px 24px; border-radius: var(--radius-lg);
-            border: 1px solid var(--color-border); display: flex; justify-content: space-between;
-            align-items: center; transition: all 0.3s ease;
+            background: var(--color-surface); /* MODIFICADO */
+            padding: 20px 24px; 
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color, box-shadow, transform;
         }
         
-        .resumen-card:hover { border-color: var(--color-primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .resumen-card.highlight { background: var(--color-success-light); border-color: var(--color-success); }
-        .resumen-label { font-size: 14px; color: var(--color-text-muted); font-weight: 500; }
-        .resumen-value { font-size: 24px; font-weight: 700; color: var(--color-text-light); }
-        .resumen-card.highlight .resumen-value { color: var(--color-success); }
+        .resumen-card:hover { 
+            border-color: var(--color-primary); /* MODIFICADO */
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-md); 
+        }
+        .resumen-card.highlight { 
+            background: var(--color-success-light-bg); /* MODIFICADO */
+            border-color: var(--color-success); /* MODIFICADO */
+        }
+        .resumen-label { 
+            font-size: 14px; 
+            color: var(--color-text-muted); /* MODIFICADO */
+            font-weight: 500; 
+        }
+        .resumen-value { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: var(--color-text-light); /* MODIFICADO */
+        }
+        .resumen-card.highlight .resumen-value { 
+            color: var(--color-success); /* MODIFICADO */
+        }
         
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(4px); -webkit-app-region: no-drag; animation: fadeIn 0.3s ease;
+            width: 100%; height: 100%; 
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px); 
+            -webkit-app-region: no-drag; 
+            animation: fadeIn 0.3s ease;
         }
         
         .modal-content {
-            position: relative; background-color: var(--color-background); margin: 5% auto; padding: 0;
-            border: 1px solid var(--color-border); border-radius: var(--radius-xl);
-            width: 90%; max-width: 500px; box-shadow: var(--shadow-xl); animation: slideUp 0.3s ease;
+            position: relative; 
+            background-color: var(--color-background); /* MODIFICADO */
+            margin: 5% auto; padding: 0;
+            border: 1px solid var(--color-border); /* MODIFICADO */
+            border-radius: var(--radius-xl);
+            width: 90%; max-width: 500px; 
+            box-shadow: var(--shadow-xl); 
+            animation: slideUp 0.3s ease;
         }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         
         .modal-header {
-            background: #000000;
-            padding: 24px 32px; border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            background: var(--color-primary); /* MODIFICADO */
+            padding: 24px 32px; 
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
             display: flex; justify-content: space-between; align-items: center;
+            transition: background-color var(--transition-fast);
         }
         
-        .modal-header h2 { margin: 0; padding: 0; border: none; color: white; font-size: 20px; }
+        .modal-header h2 { 
+            margin: 0; padding: 0; border: none; 
+            color: var(--color-primary-text); /* MODIFICADO */
+            font-size: 20px; 
+        }
         
         .close-btn {
-            color: white; font-size: 28px; font-weight: 300; cursor: pointer; background: none;
+            color: var(--color-primary-text); /* MODIFICADO */
+            font-size: 28px; font-weight: 300; cursor: pointer; background: none;
             border: none; padding: 0; width: 32px; height: 32px; display: flex;
-            align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s ease;
+            align-items: center; justify-content: center; border-radius: 50%; 
+            transition: var(--transition-fast);
         }
         
-        .close-btn:hover { background: rgba(255, 255, 255, 0.2); transform: rotate(90deg); }
+        .close-btn:hover { 
+            background: rgba(255, 255, 255, 0.2); 
+            transform: rotate(90deg); 
+        }
         .modal-body { padding: 32px; }
         .modal-body form { background: transparent; padding: 0; border: none; }
         
@@ -277,7 +522,9 @@
         
         .window-controls button {
             height: 12px; width: 12px; border-radius: 50%; border: none; cursor: pointer;
-            -webkit-app-region: no-drag; transition: all 0.2s ease; box-shadow: var(--shadow-sm);
+            -webkit-app-region: no-drag; 
+            transition: var(--transition-fast); 
+            box-shadow: var(--shadow-sm);
         }
         
         .window-controls button:hover { transform: scale(1.1); }
@@ -288,34 +535,51 @@
         #maximize-btn { background-color: #27c93f; }
         #maximize-btn:hover { background-color: #1db832; }
         
-        hr { border: none; border-top: 1px solid var(--color-border); margin: 32px 0; }
+        hr { 
+            border: none; 
+            border-top: 1px solid var(--color-border); /* MODIFICADO */
+            margin: 32px 0; 
+            transition: border-color var(--transition-fast);
+        }
         
-        .empty-state { text-align: center; padding: 48px 24px; color: var(--color-text-muted); }
+        .empty-state { 
+            text-align: center; 
+            padding: 48px 24px; 
+            color: var(--color-text-muted); /* MODIFICADO */
+        }
         .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
         
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--color-background); }
-        ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+        ::-webkit-scrollbar-track { background: var(--color-background); } /* MODIFICADO */
+        ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; } /* MODIFICADO */
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); } /* MODIFICADO */
         
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
-        
-        /* --- NUEVOS ESTILOS PARA GRUPOS DE FORMULARIO DINÁMICOS --- */
+
+        /* --- ESTILOS PARA GRUPOS DE FORMULARIO DINÁMICOS --- */
         .perfume-form-group {
-            background: var(--color-background);
-            border: 1px solid var(--color-border);
+            background: var(--color-background); /* MODIFICADO */
+            border: 1px solid var(--color-border); /* MODIFICADO */
             border-radius: var(--radius-lg);
             padding: 24px;
             margin-top: 16px;
             position: relative;
             animation: fadeIn 0.3s ease;
+            transition: var(--transition-fast);
+            transition-property: background-color, border-color;
         }
         
         /* Ocultar la etiqueta del primer item */
+        .perfume-form-group:first-of-type {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin-top: 0;
+        }
         .perfume-form-group:first-of-type > label {
             display: none;
         }
@@ -324,8 +588,8 @@
             position: absolute;
             top: 16px;
             right: 16px;
-            background: var(--color-danger);
-            color: white;
+            background: var(--color-danger); /* MODIFICADO */
+            color: var(--color-danger-text); /* MODIFICADO */
             border: none;
             border-radius: 50%;
             width: 28px;
@@ -340,7 +604,7 @@
         .btn-remover-grupo:hover {
             opacity: 1;
             transform: scale(1.1);
-            background: var(--color-danger-hover);
+            background: var(--color-danger-hover); /* MODIFICADO */
         }
         
         /* No mostrar el botón de remover en el primer item */
@@ -352,17 +616,36 @@
             grid-template-columns: 1fr 1fr;
         }
         
+        /* Botón de añadir grupo */
+        #btn-anadir-perfume-grupo {
+            background-color: var(--color-success-light-bg); /* MODIFICADO */
+            color: var(--color-success); /* MODIFICADO */
+            border: 1px dashed var(--color-success); /* MODIFICADO */
+            margin-top: 16px; 
+            font-weight: 600;
+            width: 100%;
+        }
+        #btn-anadir-perfume-grupo:hover {
+            background-color: var(--color-success); /* MODIFICADO */
+            color: var(--color-primary-text); /* MODIFICADO */
+            border-style: solid;
+        }
+        
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .tab-content { padding: 24px 20px; }
-            .app-header { padding: 24px 20px; flex-direction: column; text-align: center; }
+            .app-header { 
+                padding: 24px 20px; 
+                flex-direction: column; 
+                text-align: center; 
+            }
             .app-header h1 { font-size: 22px; }
             .logo-container { width: 50px; height: 50px; }
             .tab-button { font-size: 12px; padding: 12px 8px; }
             .action-buttons { flex-direction: column; }
             .form-grid { grid-template-columns: 1fr; }
-            
-            /* --- Ajustes móviles para el nuevo form group --- */
+
+            /* Ajustes móviles para el nuevo form group */
             .perfume-form-group .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -376,6 +659,10 @@
                 height: 24px;
                 line-height: 24px;
                 font-size: 14px;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 20px;
             }
         }
     </style>
@@ -396,6 +683,11 @@
                 <div class="app-header-text">
                     <h1>Contador de Ganancias de Decants</h1>
                 </div>
+
+                <button class="theme-toggle" id="theme-toggle" title="Cambiar tema">
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                </button>
             </div>
 
             <div class="tab-menu" id="tab-menu">
@@ -447,7 +739,7 @@
                     <div id="perfumes-container">
                         </div>
                     
-                    <button type="button" id="btn-anadir-perfume-grupo" class="btn-cancelar" style="background-color: var(--color-success-light); color: var(--color-success); border: 1px solid var(--color-success); margin-top: 16px; font-weight: 600;">
+                    <button type="button" id="btn-anadir-perfume-grupo">
                         ➕ Añadir otro perfume a esta venta
                     </button>
 
@@ -477,11 +769,11 @@
 
             <div id="tab-resumen" class="tab-content">
                 
-                <div id="filtro-resumen" style="background: rgba(15, 23, 42, 0.3); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <div id="filtro-resumen" style="background: var(--color-surface); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; border: 1px solid var(--color-border); transition: var(--transition-fast);">
                     <h2 id="resumen-titulo" style="border: none; margin: 0; padding: 0; flex-grow: 1;">Resumen del Periodo</h2>
                     <input type="month" id="filtro-mes" style="width: auto; background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--color-text-light); padding: 8px 12px; border-radius: var(--radius-md);">
                     <button id="btn-ver-total" class="btn-ver" style="background-color: var(--color-surface-hover); color: var(--color-text-muted); margin: 0;">🌍 Ver Total</button>
-                    <button id="btn-exportar-excel" class="btn-ver" style="background-color: #10b981; color: white; margin-left: auto;">📄 Exportar a Excel</button>
+                    <button id="btn-exportar-excel" class="btn-ver" style="background-color: var(--color-success-light-bg); color: var(--color-success); border: 1px solid var(--color-success); margin-left: auto;">📄 Exportar a Excel</button>
                 </div>
 
                 
@@ -494,7 +786,7 @@
                         <div style="font-size: 32px; opacity: 0.3;">💰</div>
                     </div>
                     
-                    <div class="resumen-card" style="border-color: var(--color-danger);">
+                    <div class="resumen-card">
                         <div>
                             <div class="resumen-label">Costo Total (Operacional)</div>
                             <div class="resumen-value" id="costo-mes" style="color: var(--color-danger);">$0</div>
@@ -713,6 +1005,48 @@
             </div>
         </div>
     </div>
+
+    <script>
+        (function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const docElement = document.documentElement;
+
+            // Función para aplicar el tema
+            function applyTheme(theme) {
+                docElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            }
+
+            // Función para cambiar el tema
+            function toggleTheme() {
+                const currentTheme = docElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
+            }
+
+            // Listener para el botón
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Cargar tema al inicio
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            } else if (systemPrefersDark) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+            
+            // Opcional: Escuchar cambios del sistema operativo
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) { // Solo si el usuario no ha elegido manualmente
+                    applyTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        })();
+    </script>
 
     <script src="renderer.js"></script>
 </body>
