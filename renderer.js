@@ -1,24 +1,14 @@
 // --- REFERENCIAS DOM (PESTAÑA REGISTRO/CRUD) ---
-// Campos del formulario principal
+// ... (código existente sin cambios)
 const formVenta = document.getElementById("form-venta")
 const tablaVentasBody = document.querySelector("#tabla-ventas tbody")
+// ... (el resto de las referencias DOM)
 const clienteInput = document.getElementById("cliente")
 const metodoPagoSelect = document.getElementById("metodo-pago")
 const btnSeleccionarAdjunto = document.getElementById("btn-seleccionar-adjunto")
 const nombreAdjuntoEl = document.getElementById("nombre-adjunto")
-
-// Contenedor y botón para perfumes dinámicos
 const perfumesContainer = document.getElementById("perfumes-container")
 const btnAnadirPerfumeGrupo = document.getElementById("btn-anadir-perfume-grupo")
-
-// IDs de campos que YA NO existen (los he comentado o eliminado)
-// const perfumeSelect = document.getElementById("perfume")
-// const loteSelect = document.getElementById("lote")
-// const volumenSelect = document.getElementById("volumen")
-// const precioVendidoInput = document.getElementById("precio-vendido")
-
-
-// Referencias DOM (Pestaña Resumen)
 const gananciaMesEl = document.getElementById("ganancia-mes")
 const decantsMesEl = document.getElementById("decants-mes")
 const tablaVentasResumenBody = document.querySelector("#tabla-ventas-resumen tbody")
@@ -28,12 +18,7 @@ const resumenTituloEl = document.getElementById("resumen-titulo");
 const filtroMesInput = document.getElementById("filtro-mes");
 const btnVerTotal = document.getElementById("btn-ver-total");
 const btnExportarExcel = document.getElementById("btn-exportar-excel");
-
-// Referencias DOM (Pestaña Rentabilidad)
 const tablaRentabilidadBody = document.getElementById("tabla-rentabilidad-body");
-
-
-// Referencias DOM (Modal Edición Venta)
 const modalEdicion = document.getElementById("modal-edicion")
 const formEdicion = document.getElementById("form-edicion")
 const closeBtnModal = document.querySelector(".close-btn")
@@ -46,14 +31,16 @@ const editMetodoPagoSelect = document.getElementById("edit-metodo-pago")
 const btnSeleccionarAdjuntoEdit = document.getElementById("btn-seleccionar-adjunto-edit")
 const editNombreAdjuntoEl = document.getElementById("edit-nombre-adjunto")
 
-// Referencias DOM (Tabs)
-const tabMenu = document.getElementById("tab-menu")
-const tabButtons = document.querySelectorAll(".tab-button")
+// --- CAMBIO: Selectores de Navegación (antes Tabs) ---
+const navMenu = document.getElementById("nav-menu") // CAMBIADO
+const navButtons = document.querySelectorAll(".nav-button") // CAMBIADO
 const tabContents = document.querySelectorAll(".tab-content")
 
 // Referencias DOM (Configuración CRUD Perfumes)
+// ... (código existente sin cambios)
 const formPerfumeCrud = document.getElementById("form-perfume-crud")
 const crudFormTitulo = document.getElementById("crud-form-titulo")
+// ... (el resto de las referencias de config)
 const crudSubmitBtn = document.getElementById("crud-submit-btn")
 const crudCancelarBtn = document.getElementById("crud-cancelar-btn")
 const crudOriginalNombreInput = document.getElementById("crud-original-nombre")
@@ -62,8 +49,6 @@ const crudPrecio3mlInput = document.getElementById("crud-precio-3ml")
 const crudPrecio5mlInput = document.getElementById("crud-precio-5ml")
 const crudPrecio10mlInput = document.getElementById("crud-precio-10ml")
 const tablaPerfumesBody = document.getElementById("tabla-perfumes-body")
-
-// Referencias DOM (Configuración CRUD Lotes)
 const formLoteCrud = document.getElementById("form-lote-crud");
 const loteFormTitulo = document.getElementById("lote-form-titulo");
 const lotePerfumeSelect = document.getElementById("lote-perfume-select");
@@ -77,42 +62,43 @@ const loteSubmitBtn = document.getElementById("lote-submit-btn");
 
 
 // --- Variables Globales ---
+// ... (código existente sin cambios)
 let ventas = []
 let perfumes = {}
-let adjuntoTemporalPath = null // Un solo adjunto para toda la venta
+let adjuntoTemporalPath = null
 let editAdjuntoTemporalPath = null
 
 
 // ----------------------
-// LÓGICA DE TABS
+// LÓGICA DE NAVEGACIÓN (Antes Tabs)
 // ----------------------
 
-tabMenu.addEventListener("click", (e) => {
-  if (e.target.classList.contains("tab-button")) {
-    const targetTab = e.target.dataset.tab
+navMenu.addEventListener("click", (e) => { // CAMBIADO de tabMenu a navMenu
+  const navBtn = e.target.closest('.nav-button'); // CAMBIADO: Buscar el botón padre
+  if (!navBtn) return; // Si no se hizo clic en un botón, salir
 
-    tabButtons.forEach((btn) => btn.classList.remove("active"))
-    tabContents.forEach((content) => content.classList.remove("active"))
+  const targetTab = navBtn.dataset.tab; // CAMBIADO: Obtener dataset del botón
 
-    e.target.classList.add("active")
-    document.getElementById(targetTab).classList.add("active")
+  navButtons.forEach((btn) => btn.classList.remove("active")); // CAMBIADO de tabButtons a navButtons
+  tabContents.forEach((content) => content.classList.remove("active"));
 
-    if (targetTab === "tab-resumen") {
-        const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
-        mostrarResumenYTabla(ventas, perfumes, filtroActual)
-    } else if (targetTab === "tab-rentabilidad") {
-        actualizarPestañaRentabilidad();
-    }
+  navBtn.classList.add("active"); // CAMBIADO: Activar el botón clickeado
+  document.getElementById(targetTab).classList.add("active");
+
+  if (targetTab === "tab-resumen") {
+      const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
+      mostrarResumenYTabla(ventas, perfumes, filtroActual)
+  } else if (targetTab === "tab-rentabilidad") {
+      actualizarPestañaRentabilidad();
   }
 })
 
 // ----------------------------------------------------
 // INICIALIZACIÓN Y LÓGICA DE REGISTRO DE VENTA (NUEVO)
 // ----------------------------------------------------
-
-// --- NUEVA FUNCIÓN (Extraída de la antigua `llenarSelectPerfumes`) ---
-// Rellena un <select> específico con la lista de perfumes.
+// ... (código existente sin cambios)
 function populateSelect(selectElement, placeholder) {
+// ... (código existente sin cambios)
   const perfumesOrdenados = Object.keys(perfumes).sort()
   selectElement.innerHTML = ""
   if (placeholder) {
@@ -128,27 +114,20 @@ function populateSelect(selectElement, placeholder) {
     selectElement.appendChild(option)
   })
 }
-
-// Función original, ahora usa la nueva función extraída
 function llenarSelectPerfumes() {
-  // Ya no rellena 'perfumeSelect' porque no existe de forma estática
-  populateSelect(editPerfumeSelect) // Para el modal de edición
-  populateSelect(lotePerfumeSelect, "Selecciona un perfume...") // Para la config de lotes
+// ... (código existente sin cambios)
+  populateSelect(editPerfumeSelect)
+  populateSelect(lotePerfumeSelect, "Selecciona un perfume...")
 }
-
-// Función sin cambios
 function actualizarSelectLote(perfumeNombre, selectLoteElement) {
+// ... (código existente sin cambios)
     selectLoteElement.innerHTML = "";
-    
     if (!perfumeNombre || !perfumes[perfumeNombre] || !perfumes[perfumeNombre].lotes || perfumes[perfumeNombre].lotes.length === 0) {
         selectLoteElement.innerHTML = '<option value="">Crea un lote en Configuración</option>';
         return;
     }
-    
     const lotes = perfumes[perfumeNombre].lotes;
-    
     lotes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    
     lotes.forEach(lote => {
         const costoMl = (lote.costo > 0 && lote.volumen > 0) ? (lote.costo / lote.volumen).toFixed(0) : "0";
         const option = document.createElement("option");
@@ -157,18 +136,19 @@ function actualizarSelectLote(perfumeNombre, selectLoteElement) {
         selectLoteElement.appendChild(option);
     });
 }
-
-// --- NUEVA FUNCIÓN ---
-// Crea y añade un nuevo grupo de campos de perfume al formulario
 function crearYAnadirGrupoPerfume() {
-    const groupId = Date.now(); // ID único para este grupo de campos
+// ... (código existente sin cambios)
+    const groupId = Date.now();
     const groupEl = document.createElement('div');
     groupEl.className = 'perfume-form-group';
     groupEl.dataset.id = groupId;
-    
-    // HTML para el nuevo grupo de campos
     groupEl.innerHTML = `
-        <button type="button" class="btn-remover-grupo">&times;</button>
+        <button type="button" class="btn-remover-grupo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6L6 18"></path>
+                <path d="M6 6l12 12"></path>
+            </svg>
+        </button>
         
         <label for="perfume-${groupId}">Perfume</label>
         <select id="perfume-${groupId}" class="select-perfume" required>
@@ -194,59 +174,42 @@ function crearYAnadirGrupoPerfume() {
             </div>
         </div>
     `;
-    
     perfumesContainer.appendChild(groupEl);
-    
-    // Obtener referencias a los nuevos elementos creados
     const newPerfumeSelect = document.getElementById(`perfume-${groupId}`);
     const newLoteSelect = document.getElementById(`lote-${groupId}`);
     const newVolumenSelect = document.getElementById(`volumen-${groupId}`);
     const newPrecioInput = document.getElementById(`precio-${groupId}`);
-    
-    // Rellenar el select de perfumes
     populateSelect(newPerfumeSelect, "Selecciona un perfume...");
-    
-    // Añadir listeners a los nuevos elementos
     newPerfumeSelect.addEventListener("change", () => {
       actualizarPrecio(newPerfumeSelect, newVolumenSelect, newPrecioInput)
       actualizarSelectLote(newPerfumeSelect.value, newLoteSelect);
     });
-    
     newVolumenSelect.addEventListener("change", () => {
       actualizarPrecio(newPerfumeSelect, newVolumenSelect, newPrecioInput)
     });
 }
-
-// --- Event Listener para el botón "Añadir otro perfume" ---
 btnAnadirPerfumeGrupo.addEventListener("click", crearYAnadirGrupoPerfume);
-
-// --- Event Listener para remover grupos (usando delegación de eventos) ---
 perfumesContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-remover-grupo")) {
-        // Encontrar el 'perfume-form-group' padre y removerlo
-        e.target.closest('.perfume-form-group').remove();
+    // Buscar el botón más cercano, ya sea que se haga clic en el SVG o en el botón mismo
+    const removeButton = e.target.closest('.btn-remover-grupo');
+    if (removeButton) {
+        removeButton.closest('.perfume-form-group').remove();
     }
 });
-
-
 async function cargarDatosIniciales() {
+// ... (código existente sin cambios)
   try {
     let perfumesCargados = await window.api.cargarPerfumes()
     let ventasCargadas = await window.api.cargarVentas()
-
-    // --- INICIO: MIGRACIÓN DE DATOS ÚNICA ---
     const primerPerfumeKey = Object.keys(perfumesCargados)[0];
     if (primerPerfumeKey && perfumesCargados[primerPerfumeKey].costoFrasco !== undefined) {
       alert("Detectando estructura de datos antigua... Realizando migración una única vez.");
       console.log("Iniciando migración de datos...");
-      
       const perfumesMigrados = {};
       const loteIdMap = {};
-
       Object.keys(perfumesCargados).forEach((nombre, index) => {
           const old = perfumesCargados[nombre];
           const newId = `lote_${Date.now() + index}`; 
-          
           perfumesMigrados[nombre] = {
               precios: {
                   "3ml": old.precio3ml || 0,
@@ -264,69 +227,47 @@ async function cargarDatosIniciales() {
           };
           loteIdMap[nombre] = newId;
       });
-
       const ventasMigradas = ventasCargadas.map(venta => {
           if (!venta.loteId && loteIdMap[venta.perfume]) {
               venta.loteId = loteIdMap[venta.perfume];
           }
           return venta;
       });
-
       await window.api.guardarPerfumes(perfumesMigrados);
-      
-      // La función 'guardarVentas' (plural) no existe en preload.js.
-      // Comentando esta línea para evitar errores.
-      // await window.api.guardarVentas(ventasMigradas);
       console.warn("Migración de perfumes completada. La migración de ventas fue omitida porque 'guardarVentas' (plural) no está definida en preload.js.");
-      
       console.log("Migración completada.");
       perfumes = perfumesMigrados;
       ventas = ventasMigradas;
-
     } else {
       perfumes = perfumesCargados;
       ventas = ventasCargadas;
     }
-    // --- FIN MIGRACIÓN ---
-
-    // Setear el valor del filtro de mes al mes actual
     const mesActual = new Date().toISOString().substring(0, 7)
     filtroMesInput.value = mesActual
     document.getElementById("fecha-venta").valueAsDate = new Date()
-
-    // Poblar las UIs
     llenarSelectPerfumes()
     poblarTablaPerfumes()
     poblarTablaLotes()
     mostrarResumenYTabla(ventas, perfumes, mesActual)
     mostrarTablaCRUD(ventas)
     actualizarPestañaRentabilidad()
-    
-    // --- NUEVO: Añadir el primer grupo de perfume al cargar ---
     crearYAnadirGrupoPerfume();
-    
   } catch (error) {
     console.error("Error al cargar datos:", error)
     alert("Error al cargar datos de ventas o perfumes.")
   }
 }
-
-// --- SUBMIT DEL FORMULARIO (Totalmente reescrito) ---
 formVenta.addEventListener("submit", async (e) => {
+// ... (código existente sin cambios)
   e.preventDefault()
-
   const ventasAGuardar = [];
   const grupos = perfumesContainer.querySelectorAll('.perfume-form-group');
-  
-  // Datos compartidos
   const fecha = document.getElementById("fecha-venta").value;
   const cliente = clienteInput.value || 'N/A';
   const metodoPago = metodoPagoSelect.value;
-  const adjunto = adjuntoTemporalPath; // Un solo adjunto para todo
-
+  const adjunto = adjuntoTemporalPath;
   let isValid = true;
   let errorMsg = "";
-
   if (grupos.length === 0) {
       isValid = false;
       errorMsg = "❌ Debes añadir al menos un perfume a la venta.";
@@ -335,61 +276,47 @@ formVenta.addEventListener("submit", async (e) => {
       isValid = false;
       errorMsg = "❌ Por favor, selecciona una fecha de venta.";
   }
-
-  // Iterar sobre cada grupo de perfume y validarlo
   for (const groupEl of grupos) {
       if (!isValid) break;
-      
       const perfume = groupEl.querySelector('.select-perfume').value;
       const loteId = groupEl.querySelector('.select-lote').value;
       const volumen = groupEl.querySelector('.select-volumen').value;
       const precio = groupEl.querySelector('.input-precio').value;
-
       if (!perfume || !loteId || !precio || Number(precio) <= 0) {
           isValid = false;
           errorMsg = `❌ Revisa los datos del perfume "${perfume || '??'}". Todos los campos son obligatorios.`;
           break;
       }
-      
-      // Añadir al array para guardar
       ventasAGuardar.push({
           perfume: perfume,
           loteId: loteId,
           volumen: Number.parseInt(volumen),
           precioVendido: Number.parseInt(precio),
-          adjuntoTemporalPath: adjunto, // Se asigna el mismo adjunto a todos
+          adjuntoTemporalPath: adjunto,
           adjuntoPath: null,
           fecha: fecha,
           cliente: cliente,
           metodoPago: metodoPago,
       });
   }
-
   if (!isValid) {
       alert(errorMsg);
       return;
   }
-
-  // Enviar el array de ventas al main process
   const resultado = await window.api.guardarMultiplesVentas(ventasAGuardar);
-  
   if (resultado.success) {
     alert(`✅ ¡${resultado.message}`);
-    ventas = await window.api.cargarVentas() // Recargar todas las ventas
-    
+    ventas = await window.api.cargarVentas()
     mostrarTablaCRUD(ventas)
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
-    
-    // Resetear formulario completo
     formVenta.reset()
     document.getElementById("fecha-venta").valueAsDate = new Date()
     adjuntoTemporalPath = null;
     nombreAdjuntoEl.textContent = "No se ha seleccionado un archivo.";
-    perfumesContainer.innerHTML = ''; // Limpiar todos los grupos
-    crearYAnadirGrupoPerfume(); // Añadir el primer grupo vacío
-    
+    perfumesContainer.innerHTML = '';
+    crearYAnadirGrupoPerfume();
   } else {
     alert("❌ Error al guardar las ventas: " + resultado.message)
   }
@@ -398,11 +325,11 @@ formVenta.addEventListener("submit", async (e) => {
 // -------------------------------------------
 // OTRAS FUNCIONES (Sin cambios de tu solicitud)
 // -------------------------------------------
-
+// ... (código existente sin cambios)
 function mostrarTablaCRUD(ventasData) {
+// ... (código existente sin cambios)
   tablaVentasBody.innerHTML = "";
   const ventasRecientes = ventasData.slice().reverse();
-
   ventasRecientes.forEach((venta) => {
     const rowCRUD = tablaVentasBody.insertRow();
     rowCRUD.insertCell(0).textContent = venta.fecha;
@@ -411,37 +338,33 @@ function mostrarTablaCRUD(ventasData) {
     rowCRUD.insertCell(3).textContent = `$${venta.precioVendido.toLocaleString("es-CL")}`;
     rowCRUD.insertCell(4).textContent = venta.cliente || 'N/A';
     rowCRUD.insertCell(5).textContent = venta.metodoPago || 'N/A';
-
     let adjuntoBtn = '';
     if (venta.adjuntoPath) {
       const safePath = venta.adjuntoPath.replace(/\\/g, '\\\\');
       adjuntoBtn = `<button class="btn-ver" onclick="abrirArchivo('${safePath}')">📄 Ver</button>`;
     }
-
     const cellAcciones = rowCRUD.insertCell(6);
     cellAcciones.innerHTML = `
       <div class="action-buttons">
-          <button class="btn-editar" onclick="abrirModalEdicion(${JSON.stringify(venta).replace(/"/g, "&quot;")})">✏️ Editar</button>
-          <button class="btn-eliminar" onclick="eliminarVenta(${venta.id})">🗑️ Eliminar</button>
+          <button class="btn-editar" onclick="abrirModalEdicion(${JSON.stringify(venta).replace(/"/g, "&quot;")})">Editar</button>
+          <button class="btn-eliminar" onclick="eliminarVenta(${venta.id})">Eliminar</button>
           ${adjuntoBtn}
       </div>
     `;
   });
-
   if (ventasRecientes.length === 0) {
     tablaVentasBody.innerHTML =
       '<tr><td colspan="7" style="text-align: center; padding: 48px; color: var(--color-text-muted);">📭 No hay ventas registradas aún</td></tr>';
   }
 }
-
 function mostrarResumenYTabla(ventasData, perfumesData, filtro) {
+// ... (código existente sin cambios)
   tablaVentasResumenBody.innerHTML = "";
   let ganancia = 0;
   let decants = 0;
   let costo = 0;
   let ventasFiltradas = [];
   const ventasRecientes = ventasData.slice().reverse();
-
   if (filtro === "total") {
     ventasFiltradas = ventasRecientes;
     resumenTituloEl.textContent = "Resumen Financiero (Total Histórico)";
@@ -449,15 +372,12 @@ function mostrarResumenYTabla(ventasData, perfumesData, filtro) {
     ventasFiltradas = ventasRecientes.filter(v => v.fecha.substring(0, 7) === filtro);
     resumenTituloEl.textContent = `Resumen Financiero (Mes: ${filtro})`;
   }
-
   ventasFiltradas.forEach((venta) => {
     ganancia += venta.precioVendido;
     decants++;
-    
     let costoVenta = 0;
     const perfume = perfumesData[venta.perfume];
     if (perfume) {
-        // Corrección: Asegurarse de que 'lotes' exista
         const lotes = perfume.lotes || [];
         const lote = lotes.find(l => l.id === venta.loteId);
         const loteUsado = lote || (lotes.length > 0 ? lotes[0] : null); 
@@ -467,81 +387,69 @@ function mostrarResumenYTabla(ventasData, perfumesData, filtro) {
         }
     }
     costo += costoVenta;
-
     const rowResumen = tablaVentasResumenBody.insertRow(0);
     rowResumen.insertCell(0).textContent = venta.fecha;
     rowResumen.insertCell(1).textContent = venta.perfume;
     rowResumen.insertCell(2).textContent = venta.volumen + "ml";
     rowResumen.insertCell(3).textContent = `$${venta.precioVendido.toLocaleString("es-CL")}`;
   });
-
   const gananciaNeta = ganancia - costo;
   gananciaMesEl.textContent = `$${ganancia.toLocaleString("es-CL")}`;
   decantsMesEl.textContent = decants;
   costoMesEl.textContent = `$${Math.round(costo).toLocaleString("es-CL")}`;
   gananciaNetaMesEl.textContent = `$${Math.round(gananciaNeta).toLocaleString("es-CL")}`;
-
   if (decants === 0) {
     tablaVentasResumenBody.innerHTML =
       `<tr><td colspan="4" style="text-align: center; padding: 48px; color: var(--color-text-muted);">📭 No hay ventas para este periodo</td></tr>`;
   }
 }
-
 async function eliminarVenta(id) {
+// ... (código existente sin cambios)
   if (!confirm("⚠️ ¿Estás seguro de que quieres eliminar esta venta? Esta acción no se puede deshacer y también eliminará el archivo adjunto, si existe.")) return
-
   const resultado = await window.api.eliminarVenta(id)
   if (resultado.success) {
     alert("✅ Venta eliminada con éxito.")
     ventas = ventas.filter((v) => v.id !== id)
-    
     mostrarTablaCRUD(ventas);
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
-    
   } else {
     alert("❌ Error al eliminar la venta: " + resultado.message)
   }
 }
-
 function abrirModalEdicion(venta) {
   document.getElementById("edit-id").value = venta.id
   editClienteInput.value = venta.cliente || ''
   editMetodoPagoSelect.value = venta.metodoPago || 'Efectivo'
-  
-  // Rellenar el select del modal
-  populateSelect(editPerfumeSelect); // Usamos la nueva función
+  populateSelect(editPerfumeSelect);
   editPerfumeSelect.value = venta.perfume
-  
   editVolumenSelect.value = venta.volumen
   editPrecioVendidoInput.value = venta.precioVendido
   document.getElementById("edit-fecha-venta").value = venta.fecha
   editAdjuntoTemporalPath = null
-  
   actualizarSelectLote(venta.perfume, editLoteSelect);
   editLoteSelect.value = venta.loteId;
-
   if (venta.adjuntoPath) {
     editNombreAdjuntoEl.textContent = `Actual: ${venta.adjuntoPath.split(/[\\/]/).pop()}`
   } else {
     editNombreAdjuntoEl.textContent = "No hay archivo adjunto."
   }
-  modalEdicion.style.display = "block"
+  modalEdicion.classList.add("active")
 }
 
 closeBtnModal.onclick = () => {
-  modalEdicion.style.display = "none"
+  modalEdicion.classList.remove("active")
 }
+
 window.onclick = (event) => {
   if (event.target == modalEdicion) {
-    modalEdicion.style.display = "none"
+    modalEdicion.classList.remove("active")
   }
 }
-
 formEdicion.addEventListener("submit", async (e) => {
+// ... (código existente sin cambios)
   e.preventDefault()
-
   const ventaEditada = {
     id: Number.parseInt(document.getElementById("edit-id").value),
     cliente: editClienteInput.value || 'N/A',
@@ -553,91 +461,67 @@ formEdicion.addEventListener("submit", async (e) => {
     fecha: document.getElementById("edit-fecha-venta").value,
     adjuntoTemporalPath: editAdjuntoTemporalPath,
   }
-
   const resultado = await window.api.actualizarVenta(ventaEditada)
   if (resultado.success) {
     alert("✅ Venta actualizada con éxito.")
     ventas = await window.api.cargarVentas()
-
     mostrarTablaCRUD(ventas);
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
-    modalEdicion.style.display = "none"
+    modalEdicion.classList.remove("active")
   } else {
     alert("❌ Error al actualizar la venta: " + resultado.message)
   }
 })
-
-// -------------------------------------------
-// LÓGICA DE RENTABILIDAD (ACTUALIZADA)
-// -------------------------------------------
-
 function actualizarPestañaRentabilidad() {
+// ... (código existente sin cambios)
   tablaRentabilidadBody.innerHTML = "";
-
   if (Object.keys(perfumes).length === 0) {
     tablaRentabilidadBody.innerHTML =
       '<tr><td colspan="7" style="text-align: center; padding: 48px; color: var(--color-text-muted);">📭 No hay perfumes configurados.</td></tr>';
     return
   }
-
   let hayLotes = false;
-  
   Object.keys(perfumes).sort().forEach(nombre => {
     const perfumeData = perfumes[nombre];
-    
     if (perfumeData.lotes && perfumeData.lotes.length > 0) {
         hayLotes = true;
         perfumeData.lotes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach(lote => {
-            
             const ventasDeEsteLote = ventas.filter(v => v.loteId === lote.id);
             const ingresosTotales = ventasDeEsteLote.reduce((sum, v) => sum + v.precioVendido, 0);
             const mlTotalesVendidos = ventasDeEsteLote.reduce((sum, v) => sum + v.volumen, 0);
             const costoLote = lote.costo || 0;
-            
             let costoOperativo = 0;
             if (lote.costo > 0 && lote.volumen > 0) {
                 costoOperativo = (lote.costo / lote.volumen) * mlTotalesVendidos;
             }
-            
             const valorRestanteLote = costoLote - costoOperativo;
             const gananciaOperativa = ingresosTotales - costoOperativo;
-
             const row = tablaRentabilidadBody.insertRow();
             row.insertCell(0).textContent = nombre;
             row.insertCell(1).textContent = `Lote ${lote.fecha}`;
             row.insertCell(2).textContent = `$${costoLote.toLocaleString("es-CL")}`;
-            
             const cellCostoOp = row.insertCell(3);
             cellCostoOp.textContent = `$${Math.round(costoOperativo).toLocaleString("es-CL")}`;
             cellCostoOp.style.color = 'var(--color-text-muted)';
-            
             const cellValorRestante = row.insertCell(4);
             cellValorRestante.textContent = `$${Math.round(valorRestanteLote).toLocaleString("es-CL")}`;
             cellValorRestante.style.color = valorRestanteLote < 0 ? 'var(--color-success)' : 'var(--color-warning)';
-
             row.insertCell(5).textContent = `$${ingresosTotales.toLocaleString("es-CL")}`;
-            
             const cellGananciaOp = row.insertCell(6);
             cellGananciaOp.textContent = `$${Math.round(gananciaOperativa).toLocaleString("es-CL")}`;
             cellGananciaOp.style.color = gananciaOperativa < 0 ? 'var(--color-danger)' : 'var(--color-success)';
         });
     }
   });
-
   if (!hayLotes) {
       tablaRentabilidadBody.innerHTML =
         '<tr><td colspan="7" style="text-align: center; padding: 48px; color: var(--color-text-muted);">📭 No has añadido ningún lote (inventario) en Configuración.</td></tr>';
   }
 }
-
-
-// -------------------------------------------
-// LÓGICA DE CRUD DE PERFUMES Y LOTES (ACTUALIZADA)
-// -------------------------------------------
-
 function poblarTablaPerfumes() {
+// ... (código existente sin cambios)
   tablaPerfumesBody.innerHTML = ""
   if (Object.keys(perfumes).length === 0) {
     tablaPerfumesBody.innerHTML =
@@ -653,18 +537,18 @@ function poblarTablaPerfumes() {
     const cellAcciones = row.insertCell(2)
     cellAcciones.innerHTML = `
             <div class="action-buttons">
-                <button class="btn-editar" onclick="modoEditarPerfume('${nombre.replace(/'/g, "\\'")}')">✏️ Editar Precios</button>
-                <button class="btn-eliminar" onclick="eliminarPerfume('${nombre.replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
+                <button class="btn-editar" onclick="modoEditarPerfume('${nombre.replace(/'/g, "\\'")}')">Editar Precios</button>
+                <button class="btn-eliminar" onclick="eliminarPerfume('${nombre.replace(/'/g, "\\'")}')">Eliminar</button>
             </div>
         `
   })
 }
-
 function modoEditarPerfume(nombre) {
+// ... (código existente sin cambios)
   const data = perfumes[nombre]
   if (!data) return
-  crudFormTitulo.textContent = "✏️ Editando Perfume"
-  crudSubmitBtn.textContent = "💾 Guardar Cambios"
+  crudFormTitulo.textContent = "Editando Perfume"
+  crudSubmitBtn.textContent = "Guardar Cambios"
   crudCancelarBtn.style.display = "block"
   crudOriginalNombreInput.value = nombre
   crudNombreInput.value = nombre
@@ -673,18 +557,17 @@ function modoEditarPerfume(nombre) {
   crudPrecio10mlInput.value = data.precios["10ml"]
   crudFormTitulo.scrollIntoView({ behavior: "smooth" })
 }
-
 function resetFormularioCrud() {
+// ... (código existente sin cambios)
   crudFormTitulo.textContent = "Añadir Nuevo Perfume"
   crudSubmitBtn.textContent = "💾 Guardar Perfume"
   crudCancelarBtn.style.display = "none"
   formPerfumeCrud.reset()
   crudOriginalNombreInput.value = ""
 }
-
 crudCancelarBtn.addEventListener("click", resetFormularioCrud)
-
 formPerfumeCrud.addEventListener("submit", async (e) => {
+// ... (código existente sin cambios)
   e.preventDefault()
   const originalNombre = crudOriginalNombreInput.value
   const nombre = crudNombreInput.value.trim()
@@ -696,19 +579,14 @@ formPerfumeCrud.addEventListener("submit", async (e) => {
     alert("❌ Ya existe un perfume con ese nombre. Por favor, elige otro.")
     return
   }
-  
   const perfumeData = perfumes[originalNombre] || { lotes: [] };
-  
   perfumeData.precios = {
     "3ml": Number.parseInt(crudPrecio3mlInput.value) || 0,
     "5ml": Number.parseInt(crudPrecio5mlInput.value) || 0,
     "10ml": Number.parseInt(crudPrecio10mlInput.value) || 0,
   }
-
   if (originalNombre && originalNombre !== nombre) {
     delete perfumes[originalNombre];
-    
-    // Actualizar ventas con el nuevo nombre (esto sigue necesitando 'guardarVentasArray')
     let ventasActualizadas = false;
     ventas.forEach(v => {
         if (v.perfume === originalNombre) {
@@ -717,16 +595,12 @@ formPerfumeCrud.addEventListener("submit", async (e) => {
         }
     });
     if (ventasActualizadas) {
-        // La función 'guardarVentas' (plural) no existe.
-        // await window.api.guardarVentas(ventas);
-        // Recargamos para al menos tener los datos consistentes desde el archivo.
         ventas = await window.api.cargarVentas();
         mostrarTablaCRUD(ventas);
         console.warn("Se renombró un perfume, pero las ventas antiguas no se actualizarán masivamente (función 'guardarVentas' (plural) no implementada).");
     }
   }
   perfumes[nombre] = perfumeData;
-  
   const resultado = await window.api.guardarPerfumes(perfumes)
   if (resultado.success) {
     alert(`✅ Perfume "${nombre}" guardado con éxito.`)
@@ -740,7 +614,6 @@ formPerfumeCrud.addEventListener("submit", async (e) => {
     delete perfumes[nombre]
     if (originalNombre) {
       perfumes[originalNombre] = perfumeData;
-      // Revertir ventas
       let ventasRevertidas = false;
       ventas.forEach(v => {
         if (v.perfume === nombre) {
@@ -749,26 +622,22 @@ formPerfumeCrud.addEventListener("submit", async (e) => {
         }
       });
       if (ventasRevertidas) {
-          // await window.api.guardarVentas(ventas);
           ventas = await window.api.cargarVentas();
           mostrarTablaCRUD(ventas);
       }
     }
   }
 })
-
 async function eliminarPerfume(nombre) {
+// ... (código existente sin cambios)
   const ventasAsociadas = ventas.filter(v => v.perfume === nombre).length;
   if (ventasAsociadas > 0) {
       alert(`❌ No se puede eliminar "${nombre}" porque tiene ${ventasAsociadas} ventas asociadas. Primero elimina las ventas.`);
       return;
   }
-  
   if (!confirm(`⚠️ ¿Estás seguro de que quieres eliminar "${nombre}"? Esta acción no se puede deshacer.`)) return
-  
   const dataBackup = perfumes[nombre]
   delete perfumes[nombre]
-  
   const resultado = await window.api.guardarPerfumes(perfumes)
   if (resultado.success) {
     alert(`✅ Perfume "${nombre}" eliminado con éxito.`)
@@ -781,13 +650,10 @@ async function eliminarPerfume(nombre) {
     perfumes[nombre] = dataBackup
   }
 }
-
-// --- LÓGICA DE CRUD DE LOTES (ACTUALIZADA) ---
-
 function poblarTablaLotes() {
+// ... (código existente sin cambios)
     tablaLotesBody.innerHTML = "";
     let hayLotes = false;
-    
     Object.keys(perfumes).sort().forEach(nombre => {
         if (perfumes[nombre].lotes && perfumes[nombre].lotes.length > 0) {
             hayLotes = true;
@@ -801,41 +667,35 @@ function poblarTablaLotes() {
                 row.insertCell(4).textContent = `$${costoPorMl} / ml`;
                 row.insertCell(5).innerHTML = `
                     <div class="action-buttons">
-                        <button class="btn-editar" onclick="modoEditarLote('${nombre.replace(/'/g, "\\'")}', '${lote.id}')">✏️</button>
-                        <button class="btn-eliminar" onclick="eliminarLote('${nombre.replace(/'/g, "\\'")}', '${lote.id}')">🗑️</button>
+                        <button class="btn-editar" onclick="modoEditarLote('${nombre.replace(/'/g, "\\'")}', '${lote.id}')">Editar</button>
+                        <button class="btn-eliminar" onclick="eliminarLote('${nombre.replace(/'/g, "\\'")}', '${lote.id}')">Eliminar</button>
                     </div>
                 `;
             });
         }
     });
-
     if (!hayLotes) {
         tablaLotesBody.innerHTML =
           '<tr><td colspan="6" style="text-align: center; padding: 48px; color: var(--color-text-muted);">📭 No has añadido ningún lote (inventario) a ningún perfume.</td></tr>';
     }
 }
-
-// --- NUEVA FUNCIÓN ---
 function modoEditarLote(nombrePerfume, loteId) {
+// ... (código existente sin cambios)
     const lote = perfumes[nombrePerfume]?.lotes.find(l => l.id === loteId);
     if (!lote) return;
-
-    loteFormTitulo.textContent = "✏️ Editando Lote";
-    loteSubmitBtn.textContent = "💾 Guardar Cambios";
+    loteFormTitulo.textContent = "Editando Lote";
+    loteSubmitBtn.textContent = "Guardar Cambios";
     loteCancelarBtn.style.display = "block";
-
     loteEditIdInput.value = lote.id;
     lotePerfumeSelect.value = nombrePerfume;
     lotePerfumeSelect.disabled = true;
     loteFechaInput.value = lote.fecha;
     loteCostoFrascoInput.value = lote.costo;
     loteVolumenFrascoInput.value = lote.volumen;
-
     loteFormTitulo.scrollIntoView({ behavior: "smooth" });
 }
-
-// --- NUEVA FUNCIÓN ---
 function resetFormularioLote() {
+// ... (código existente sin cambios)
     loteFormTitulo.textContent = "Gestión de Lotes (Inventario)";
     loteSubmitBtn.textContent = "➕ Añadir Lote al Inventario";
     loteCancelarBtn.style.display = "none";
@@ -843,20 +703,15 @@ function resetFormularioLote() {
     formLoteCrud.reset();
     loteEditIdInput.value = "";
 }
-
-// --- NUEVO LISTENER ---
 loteCancelarBtn.addEventListener("click", resetFormularioLote);
-
-// --- LÓGICA DE SUBMIT ACTUALIZADA ---
 formLoteCrud.addEventListener("submit", async (e) => {
+// ... (código existente sin cambios)
     e.preventDefault();
-    
     const nombrePerfume = lotePerfumeSelect.value;
     const costo = Number.parseInt(loteCostoFrascoInput.value);
     const volumen = Number.parseInt(loteVolumenFrascoInput.value);
     const fecha = loteFechaInput.value;
     const editId = loteEditIdInput.value;
-
     if (!nombrePerfume) {
         alert("❌ Debes seleccionar un perfume.");
         return;
@@ -865,24 +720,18 @@ formLoteCrud.addEventListener("submit", async (e) => {
         alert("❌ Debes completar todos los campos del lote con valores válidos.");
         return;
     }
-
-    // Asegurarse de que el array 'lotes' exista
     if (!perfumes[nombrePerfume].lotes) {
         perfumes[nombrePerfume].lotes = [];
     }
-
     let loteBackup = null;
     let loteIndex = -1;
-
     if (editId) {
-        // --- MODO EDICIÓN ---
         loteIndex = perfumes[nombrePerfume].lotes.findIndex(l => l.id === editId);
         if (loteIndex === -1) {
             alert("Error: No se encontró el lote a editar.");
             return;
         }
         loteBackup = { ...perfumes[nombrePerfume].lotes[loteIndex] };
-        
         perfumes[nombrePerfume].lotes[loteIndex] = {
             id: editId,
             fecha,
@@ -890,7 +739,6 @@ formLoteCrud.addEventListener("submit", async (e) => {
             volumen
         };
     } else {
-        // --- MODO CREACIÓN ---
         const nuevoLote = {
             id: `lote_${Date.now()}`,
             fecha,
@@ -899,7 +747,6 @@ formLoteCrud.addEventListener("submit", async (e) => {
         };
         perfumes[nombrePerfume].lotes.push(nuevoLote);
     }
-
     const resultado = await window.api.guardarPerfumes(perfumes);
     if (resultado.success) {
         alert(editId ? "✅ Lote actualizado con éxito." : "✅ Lote añadido con éxito.");
@@ -908,7 +755,6 @@ formLoteCrud.addEventListener("submit", async (e) => {
         actualizarPestañaRentabilidad();
     } else {
         alert("❌ Error al guardar el lote: " + resultado.message);
-        // Revertir
         if (editId && loteBackup) {
             perfumes[nombrePerfume].lotes[loteIndex] = loteBackup;
         } else {
@@ -916,22 +762,18 @@ formLoteCrud.addEventListener("submit", async (e) => {
         }
     }
 });
-
 async function eliminarLote(nombrePerfume, loteId) {
+// ... (código existente sin cambios)
     const ventasAsociadas = ventas.filter(v => v.loteId === loteId).length;
     if (ventasAsociadas > 0) {
         alert(`❌ No se puede eliminar este lote porque tiene ${ventasAsociadas} ventas asociadas. Primero elimina o reasigna esas ventas (editándolas).`);
         return;
     }
-
     if (!confirm(`⚠️ ¿Estás seguro de que quieres eliminar este lote? Esta acción no se puede deshacer.`)) return;
-
     const loteIndex = perfumes[nombrePerfume].lotes.findIndex(l => l.id === loteId);
     if (loteIndex === -1) return;
-
     const loteBackup = perfumes[nombrePerfume].lotes[loteIndex];
     perfumes[nombrePerfume].lotes.splice(loteIndex, 1);
-
     const resultado = await window.api.guardarPerfumes(perfumes);
     if (resultado.success) {
         alert(`✅ Lote eliminado de "${nombrePerfume}" con éxito.`);
@@ -942,12 +784,8 @@ async function eliminarLote(nombrePerfume, loteId) {
         perfumes[nombrePerfume].lotes.splice(loteIndex, 0, loteBackup);
     }
 }
-
-// ----------------------
-// LÓGICA DE PRECIOS AUTOMÁTICOS (Sin cambios)
-// ----------------------
-
 function actualizarPrecio(perfumeElem, volumenElem, precioElem) {
+// ... (código existente sin cambios)
   const perfume = perfumeElem.value
   const volumen = Number.parseInt(volumenElem.value)
   if (perfume && volumen && perfumes[perfume]) {
@@ -961,49 +799,40 @@ function actualizarPrecio(perfumeElem, volumenElem, precioElem) {
     }
   }
 }
-
-// Los listeners estáticos se han movido a la creación dinámica
-// (excepto los del modal de edición)
 editPerfumeSelect.addEventListener("change", () => {
+// ... (código existente sin cambios)
   actualizarPrecio(editPerfumeSelect, editVolumenSelect, editPrecioVendidoInput)
   actualizarSelectLote(editPerfumeSelect.value, editLoteSelect);
 })
 editVolumenSelect.addEventListener("change", () => {
+// ... (código existente sin cambios)
   actualizarPrecio(editPerfumeSelect, editVolumenSelect, editPrecioVendidoInput)
 })
-
-// ----------------------
-// LÓGICA PARA ADJUNTAR ARCHIVOS (sin cambios)
-// ----------------------
-
 btnSeleccionarAdjunto.addEventListener("click", async () => {
+// ... (código existente sin cambios)
   const path = await window.api.seleccionarArchivo()
   if (path) {
-    adjuntoTemporalPath = path // Se guarda en la variable global
+    adjuntoTemporalPath = path
     nombreAdjuntoEl.textContent = path.split(/[\\/]/).pop()
   }
 })
-
 btnSeleccionarAdjuntoEdit.addEventListener("click", async () => {
+// ... (código existente sin cambios)
   const path = await window.api.seleccionarArchivo()
   if (path) {
     editAdjuntoTemporalPath = path
     editNombreAdjuntoEl.textContent = `Nuevo: ${path.split(/[\\/]/).pop()}`
   }
 })
-
 async function abrirArchivo(path) {
+// ... (código existente sin cambios)
   const resultado = await window.api.abrirArchivo(path)
   if (!resultado.success) {
     alert("Error al abrir el archivo. Es posible que haya sido movido o eliminado.")
   }
 }
-
-// ----------------------
-// LÓGICA DE FILTRO DE RESUMEN (sin cambios)
-// ----------------------
-
 filtroMesInput.addEventListener("input", () => {
+// ... (código existente sin cambios)
   const mesSeleccionado = filtroMesInput.value;
   if (!mesSeleccionado) {
     const mesActual = new Date().toISOString().substring(0, 7)
@@ -1013,24 +842,19 @@ filtroMesInput.addEventListener("input", () => {
   }
   mostrarResumenYTabla(ventas, perfumes, mesSeleccionado);
 });
-
 btnVerTotal.addEventListener("click", () => {
+// ... (código existente sin cambios)
   mostrarResumenYTabla(ventas, perfumes, "total");
   filtroMesInput.value = "";
 });
-
-// ----------------------
-// LÓGICA DE EXPORTACIÓN (sin cambios)
-// ----------------------
-
 function prepararDatosExportacion(filtro) {
+// ... (código existente sin cambios)
   let ganancia = 0;
   let decants = 0;
   let costo = 0;
   let ventasFiltradas = [];
   const ventasRecientes = ventas.slice();
   let titulo = "";
-  
   if (filtro === "total") {
     ventasFiltradas = ventasRecientes;
     titulo = "Total_Historico";
@@ -1038,14 +862,11 @@ function prepararDatosExportacion(filtro) {
     ventasFiltradas = ventasRecientes.filter(v => v.fecha.substring(0, 7) === filtro);
     titulo = filtro;
   }
-
   const ventasExportar = [];
   ventasFiltradas.forEach((venta) => {
-    
     let costoVenta = 0;
     const perfume = perfumes[venta.perfume];
     if (perfume) {
-        // Corrección: Asegurarse de que 'lotes' exista
         const lotes = perfume.lotes || [];
         const lote = lotes.find(l => l.id === venta.loteId);
         const loteUsado = lote || (lotes.length > 0 ? lotes[0] : null);
@@ -1054,13 +875,10 @@ function prepararDatosExportacion(filtro) {
             costoVenta = Math.round(costoPorMl * venta.volumen);
         }
     }
-    
     const gananciaNetaVenta = venta.precioVendido - costoVenta;
-
     ganancia += venta.precioVendido;
     costo += costoVenta;
     decants++;
-
     ventasExportar.push({
       fecha: venta.fecha,
       cliente: venta.cliente || 'N/A',
@@ -1071,9 +889,7 @@ function prepararDatosExportacion(filtro) {
       gananciaNetaVenta: gananciaNetaVenta
     });
   });
-
   const gananciaNeta = ganancia - costo;
-
   return {
     titulo: titulo,
     ventas: ventasExportar.sort((a, b) => a.fecha.localeCompare(b.fecha)),
@@ -1085,25 +901,20 @@ function prepararDatosExportacion(filtro) {
     }
   };
 }
-
 btnExportarExcel.addEventListener("click", async () => {
+// ... (código existente sin cambios)
   const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value;
-
   if (!filtroActual) {
     alert("Por favor, selecciona un mes válido o presiona 'Ver Total' primero.");
     return;
   }
-
   const datos = prepararDatosExportacion(filtroActual);
-
   if (datos.ventas.length === 0) {
     alert("No hay ventas para exportar en este periodo.");
     return;
   }
-
   alert("Preparando exportación... Se abrirá una ventana para guardar.");
   const resultado = await window.api.exportarExcel(datos);
-
   if (resultado.success) {
     alert(resultado.message);
   } else {
@@ -1112,29 +923,21 @@ btnExportarExcel.addEventListener("click", async () => {
     }
   }
 });
-
-
-// ----------------------
-// LÓGICA DE CONTROL DE VENTANA (sin cambios)
-// ----------------------
-
 document.getElementById("close-btn").addEventListener("click", () => {
+// ... (código existente sin cambios)
   window.api.closeApp()
 })
 document.getElementById("minimize-btn").addEventListener("click", () => {
+// ... (código existente sin cambios)
   window.api.minimizeApp()
 })
 document.getElementById("maximize-btn").addEventListener("click", () => {
+// ... (código existente sin cambios)
   window.api.maximizeApp()
 })
-
-// ----------------------
-// INICIALIZACIÓN
-// ----------------------
 cargarDatosIniciales()
-
-// Exponer funciones globales
 window.abrirModalEdicion = abrirModalEdicion
+// ... (código existente sin cambios)
 window.eliminarVenta = eliminarVenta
 window.modoEditarPerfume = modoEditarPerfume
 window.eliminarPerfume = eliminarPerfume
