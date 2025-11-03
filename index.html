@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <title>Contador de Ganancias de Perfumes</title>
     <style>
-        /* --- ESTILOS (sin cambios, son los mismos que antes) --- */
+        /* --- ESTILOS ACTUALIZADOS: Colores blanco y negro sobrios --- */
         :root {
-            --color-primary: #3b82f6;
-            --color-primary-hover: #2563eb;
-            --color-primary-light: rgba(59, 130, 246, 0.1);
-            --color-background: #0f172a;
-            --color-surface: #1e293b;
-            --color-surface-hover: #334155;
-            --color-border: #334155;
-            --color-text-light: #f1f5f9;
-            --color-text-muted: #94a3b8;
-            --color-danger: #ef4444;
-            --color-danger-hover: #dc2626;
-            --color-warning: #f59e0b;
-            --color-warning-hover: #d97706;
-            --color-success: #10b981;
-            --color-success-light: rgba(16, 185, 129, 0.1);
+            --color-primary: #000000;
+            --color-primary-hover: #1a1a1a;
+            --color-primary-light: rgba(0, 0, 0, 0.08);
+            --color-background: #ffffff;
+            --color-surface: #f5f5f5;
+            --color-surface-hover: #e8e8e8;
+            --color-border: #d0d0d0;
+            --color-text-light: #1a1a1a;
+            --color-text-muted: #666666;
+            --color-danger: #cc0000;
+            --color-danger-hover: #990000;
+            --color-warning: #ff9900;
+            --color-warning-hover: #cc7700;
+            --color-success: #00aa00;
+            --color-success-light: rgba(0, 170, 0, 0.1);
             
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
             
             --radius-sm: 6px;
             --radius-md: 8px;
@@ -37,7 +37,7 @@
         
         body { 
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: #ffffff;
             color: var(--color-text-light);
             -webkit-app-region: drag;
             padding-top: 50px;
@@ -53,7 +53,7 @@
         }
         
         .main-card {
-            background: var(--color-surface);
+            background: var(--color-background);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-xl);
             overflow: hidden;
@@ -61,15 +61,47 @@
         }
         
         .app-header {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #6366f1 100%);
+            background: #ffffff;
             padding: 30px 40px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            border-bottom: 2px solid var(--color-border);
         }
         
-        .app-header h1 { font-size: 28px; font-weight: 700; color: white; margin: 0; letter-spacing: -0.5px; }
-        .app-header p { color: rgba(255, 255, 255, 0.9); margin-top: 8px; font-size: 14px; }
+        /* Agregar estilos para el logo en la esquina superior izquierda */
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
         
-        .tab-menu { display: flex; background: rgba(15, 23, 42, 0.5); padding: 0; border-bottom: 1px solid var(--color-border); gap: 4px; }
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+        
+        .logo-container.empty {
+            color: var(--color-text-muted);
+            font-size: 32px;
+        }
+        
+        .app-header-text {
+            flex: 1;
+        }
+        
+        .app-header h1 { font-size: 28px; font-weight: 700; color: var(--color-text-light); margin: 0; letter-spacing: -0.5px; }
+        .app-header p { color: var(--color-text-muted); margin-top: 8px; font-size: 14px; }
+        
+        .tab-menu { display: flex; background: var(--color-surface); padding: 0; border-bottom: 1px solid var(--color-border); gap: 4px; }
         
         .tab-button {
             flex: 1; background: transparent; border: none; padding: 16px 20px; cursor: pointer;
@@ -100,7 +132,7 @@
         
         h3 { font-size: 16px; font-weight: 600; color: var(--color-text-light); margin: 32px 0 16px 0; }
         
-        form { background: rgba(15, 23, 42, 0.3); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
+        form { background: var(--color-surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
         
         form label {
             display: block; margin-top: 16px; margin-bottom: 8px;
@@ -125,40 +157,57 @@
         
         button[type="submit"] {
             width: 100%; padding: 14px 24px; margin-top: 24px;
-            background: linear-gradient(135deg, var(--color-primary) 0%, #6366f1 100%);
+            background: var(--color-primary);
             color: white; border: none; border-radius: var(--radius-md);
             font-weight: 600; font-size: 15px; box-shadow: var(--shadow-md);
         }
         
-        button[type="submit"]:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        button[type="submit"]:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); background: var(--color-primary-hover); }
         button[type="submit"]:active { transform: translateY(0); }
         button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         
-        .action-buttons { display: flex; gap: 8px; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
         
         button.btn-editar, button.btn-eliminar {
             padding: 8px 16px; border: none; border-radius: var(--radius-sm);
             font-size: 13px; font-weight: 500; transition: all 0.2s ease;
         }
         
-        button.btn-editar { background-color: var(--color-warning); color: #1e293b; }
+        button.btn-editar { background-color: var(--color-warning); color: #000000; }
         button.btn-editar:hover { background-color: var(--color-warning-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
         
         button.btn-eliminar { background-color: var(--color-danger); color: white; }
         button.btn-eliminar:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
         
-        /* NUEVO: Botón Cancelar */
+        button.btn-ver {
+            padding: 8px 16px; border: none; border-radius: var(--radius-sm);
+            font-size: 13px; font-weight: 500; transition: all 0.2s ease;
+            background-color: var(--color-primary); color: white;
+        }
+        button.btn-ver:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        
         button.btn-cancelar {
             width: 100%; padding: 12px 24px; margin-top: 12px;
             background: var(--color-surface-hover); color: var(--color-text-muted);
             border: none; border-radius: var(--radius-md); font-weight: 500; font-size: 15px;
         }
         button.btn-cancelar:hover { background: var(--color-border); color: var(--color-text-light); }
+
+        button.btn-adjuntar {
+            width: 100%; padding: 12px 16px; margin-top: 8px;
+            background: var(--color-surface-hover); color: var(--color-text-muted);
+            border: 1px solid var(--color-border); border-radius: var(--radius-md);
+            font-weight: 500; font-size: 14px; text-align: left;
+        }
+        button.btn-adjuntar:hover { background: var(--color-border); color: var(--color-text-light); }
+        #nombre-adjunto, #edit-nombre-adjunto {
+            font-size: 12px; color: var(--color-text-muted); margin-top: 8px; display: block;
+        }
         
         .table-container { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-top: 24px; }
         
         table { width: 100%; border-collapse: collapse; }
-        thead { background: rgba(15, 23, 42, 0.5); }
+        thead { background: var(--color-surface); }
         
         th {
             padding: 16px 12px; text-align: left; font-weight: 600; font-size: 12px;
@@ -172,13 +221,13 @@
         }
         
         tbody tr { transition: background-color 0.2s ease; }
-        tbody tr:hover { background-color: var(--color-surface-hover); }
+        tbody tr:hover { background-color: var(--color-surface); }
         tbody tr:last-child td { border-bottom: none; }
         
         .resumen { display: grid; gap: 16px; margin-bottom: 32px; }
         
         .resumen-card {
-            background: rgba(15, 23, 42, 0.3); padding: 20px 24px; border-radius: var(--radius-lg);
+            background: var(--color-surface); padding: 20px 24px; border-radius: var(--radius-lg);
             border: 1px solid var(--color-border); display: flex; justify-content: space-between;
             align-items: center; transition: all 0.3s ease;
         }
@@ -191,12 +240,12 @@
         
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7);
+            width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(4px); -webkit-app-region: no-drag; animation: fadeIn 0.3s ease;
         }
         
         .modal-content {
-            position: relative; background-color: var(--color-surface); margin: 5% auto; padding: 0;
+            position: relative; background-color: var(--color-background); margin: 5% auto; padding: 0;
             border: 1px solid var(--color-border); border-radius: var(--radius-xl);
             width: 90%; max-width: 500px; box-shadow: var(--shadow-xl); animation: slideUp 0.3s ease;
         }
@@ -204,7 +253,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         
         .modal-header {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #6366f1 100%);
+            background: #000000;
             padding: 24px 32px; border-radius: var(--radius-xl) var(--radius-xl) 0 0;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -249,22 +298,85 @@
         ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
         
-        /* NUEVO: Grid para formulario y precios */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
         
+        /* --- NUEVOS ESTILOS PARA GRUPOS DE FORMULARIO DINÁMICOS --- */
+        .perfume-form-group {
+            background: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-top: 16px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Ocultar la etiqueta del primer item */
+        .perfume-form-group:first-of-type > label {
+            display: none;
+        }
+
+        .btn-remover-grupo {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--color-danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 28px;
+            text-align: center;
+            padding: 0;
+            opacity: 0.7;
+        }
+        .btn-remover-grupo:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background: var(--color-danger-hover);
+        }
+        
+        /* No mostrar el botón de remover en el primer item */
+        .perfume-form-group:first-of-type .btn-remover-grupo {
+            display: none;
+        }
+
+        .perfume-form-group .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .tab-content { padding: 24px 20px; }
-            .app-header { padding: 24px 20px; }
+            .app-header { padding: 24px 20px; flex-direction: column; text-align: center; }
             .app-header h1 { font-size: 22px; }
+            .logo-container { width: 50px; height: 50px; }
             .tab-button { font-size: 12px; padding: 12px 8px; }
             .action-buttons { flex-direction: column; }
-            /* NUEVO: Stack en grid */
             .form-grid { grid-template-columns: 1fr; }
+            
+            /* --- Ajustes móviles para el nuevo form group --- */
+            .perfume-form-group .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .perfume-form-group {
+                padding: 24px 16px 16px 16px;
+            }
+            .btn-remover-grupo {
+                top: 8px;
+                right: 8px;
+                width: 24px;
+                height: 24px;
+                line-height: 24px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -278,8 +390,12 @@
     <div class="container">
         <div class="main-card">
             <div class="app-header">
-                <h1>💎 Contador de Ganancias de Decants</h1>
-                <p>Gestiona tus ventas y maximiza tus ganancias</p>
+                <div class="logo-container empty" id="logo-container">
+                    <img src="ONE_FRAGANCE.png" alt="Logo">
+                </div>
+                <div class="app-header-text">
+                    <h1>Contador de Ganancias de Decants</h1>
+                </div>
             </div>
 
             <div class="tab-menu" id="tab-menu">
@@ -289,6 +405,9 @@
                 <button class="tab-button" data-tab="tab-resumen">
                     📊 Resumen Mensual
                 </button>
+                <button class="tab-button" data-tab="tab-rentabilidad">
+                    💰 Rentabilidad (ROI)
+                </button>
                 <button class="tab-button" data-tab="tab-config">
                     ⚙️ Configuración
                 </button>
@@ -297,23 +416,42 @@
             <div id="tab-registro" class="tab-content active">
                 <h2>Registrar Nueva Venta</h2>
                 <form id="form-venta">
-                    <label for="perfume">Perfume</label>
-                    <select id="perfume" required></select>
-
-                    <label for="volumen">Volumen (ml)</label>
-                    <select id="volumen" required>
-                        <option value="3">3ml</option>
-                        <option value="5">5ml</option>
-                        <option value="10">10ml</option>
-                    </select>
-
-                    <label for="precio-vendido">Precio Vendido ($)</label>
-                    <input type="number" id="precio-vendido" min="0" required placeholder="Ej: 4990">
                     
-                    <label for="fecha-venta">Fecha de Venta</label>
-                    <input type="date" id="fecha-venta" required>
+                    <h3>Datos del Cliente</h3>
+                    <label for="cliente">Nombre Cliente</label>
+                    <input type="text" id="cliente" placeholder="Ej: Juan Pérez">
 
-                    <button type="submit">✨ Registrar Venta</button>
+                    <div class="form-grid">
+                        <div>
+                            <label for="metodo-pago">Método de Pago</label>
+                            <select id="metodo-pago" required>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Débito">Débito</option>
+                                <option value="Crédito">Crédito</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="fecha-venta">Fecha de Venta</label>
+                            <input type="date" id="fecha-venta" required>
+                        </div>
+                    </div>
+
+                    <label for="btn-seleccionar-adjunto">Comprobante de Pago (Opcional)</label>
+                    <button type="button" id="btn-seleccionar-adjunto" class="btn-adjuntar">📎 Seleccionar Archivo...</button>
+                    <span id="nombre-adjunto">No se ha seleccionado un archivo.</span>
+
+                    <hr>
+                    <h3>Perfumes en esta Venta</h3>
+                    
+                    <div id="perfumes-container">
+                        </div>
+                    
+                    <button type="button" id="btn-anadir-perfume-grupo" class="btn-cancelar" style="background-color: var(--color-success-light); color: var(--color-success); border: 1px solid var(--color-success); margin-top: 16px; font-weight: 600;">
+                        ➕ Añadir otro perfume a esta venta
+                    </button>
+
+                    <button type="submit" id="btn-registrar-venta-final">✨ Registrar Venta Completa</button>
                 </form>
                 
                 <hr>
@@ -327,6 +465,8 @@
                                 <th>Perfume</th>
                                 <th>Volumen</th>
                                 <th>Precio</th>
+                                <th>Cliente</th>
+                                <th>Pago</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -336,7 +476,14 @@
             </div>
 
             <div id="tab-resumen" class="tab-content">
-                <h2>Resumen Financiero del Mes</h2>
+                
+                <div id="filtro-resumen" style="background: rgba(15, 23, 42, 0.3); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                    <h2 id="resumen-titulo" style="border: none; margin: 0; padding: 0; flex-grow: 1;">Resumen del Periodo</h2>
+                    <input type="month" id="filtro-mes" style="width: auto; background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--color-text-light); padding: 8px 12px; border-radius: var(--radius-md);">
+                    <button id="btn-ver-total" class="btn-ver" style="background-color: var(--color-surface-hover); color: var(--color-text-muted); margin: 0;">🌍 Ver Total</button>
+                    <button id="btn-exportar-excel" class="btn-ver" style="background-color: #10b981; color: white; margin-left: auto;">📄 Exportar a Excel</button>
+                </div>
+
                 
                 <div class="resumen">
                     <div class="resumen-card">
@@ -349,7 +496,7 @@
                     
                     <div class="resumen-card" style="border-color: var(--color-danger);">
                         <div>
-                            <div class="resumen-label">Costo Total del Mes</div>
+                            <div class="resumen-label">Costo Total (Operacional)</div>
                             <div class="resumen-value" id="costo-mes" style="color: var(--color-danger);">$0</div>
                         </div>
                         <div style="font-size: 32px; opacity: 0.3;">💸</div>
@@ -365,14 +512,14 @@
                     
                     <div class="resumen-card highlight">
                         <div>
-                            <div class="resumen-label">Ganancia Neta Estimada</div>
-                            <div class="resumen-value" id="ganancia-neta-mes" style="color: var(--color-success);">$0</div>
+                            <div class="resumen-label">Ganancia Neta (Operacional)</div>
+                            <div class="resumen-value"id="ganancia-neta-mes" style="color: var(--color-success);">$0</div>
                         </div>
                         <div style="font-size: 32px; opacity: 0.5;">✨</div>
                     </div>
                 </div>
                 
-                <h3>Detalle de Ventas del Mes</h3>
+                <h3>Detalle de Ventas del Periodo</h3>
                 <div class="table-container">
                     <table id="tabla-ventas-resumen">
                         <thead>
@@ -388,10 +535,32 @@
                 </div>
             </div>
 
-            <div id="tab-config" class="tab-content">
-                <h2 id="crud-form-titulo">Añadir Nuevo Perfume</h2>
+            <div id="tab-rentabilidad" class="tab-content">
+                <h2>Rentabilidad por Frasco (Retorno de Inversión)</h2>
                 <p style="color: var(--color-text-muted); margin-bottom: 24px;">
-                    Gestiona la lista maestra de perfumes, sus precios de venta y sus costos.
+                    Compara el costo de cada lote de frascos con sus ingresos históricos para ver el retorno de tu inversión (ROI) y tu ganancia operativa real por frasco.
+                </p>
+                <div class="table-container">
+                    <table id="tabla-rentabilidad">
+                        <thead>
+                            <tr>
+                                <th>Perfume</th>
+                                <th>Lote (Fecha)</th>
+                                <th>Inversión (Costo Lote)</th>
+                                <th>Costo Vendido (ML)</th>
+                                <th>Valor Restante (Lote)</th> <th>Ingresos Totales</th>
+                                <th>Ganancia Neta (Dinero Aparte)</th> </tr>
+                        </thead>
+                        <tbody id="tabla-rentabilidad-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-config" class="tab-content">
+                <h2 id="crud-form-titulo">Gestión de Perfumes (Precios)</h2>
+                <p style="color: var(--color-text-muted); margin-bottom: 24px;">
+                    Añade o edita los nombres y precios de venta de tus perfumes. Los costos se gestionan en la sección de "Lotes".
                 </p>
                 
                 <form id="form-perfume-crud">
@@ -416,18 +585,6 @@
                         </div>
                     </div>
 
-                    <h3>Datos de Costo</h3>
-                    <div class="form-grid">
-                        <div>
-                            <label for="crud-costo-frasco">Costo Total Frasco ($)</label>
-                            <input type="number" id="crud-costo-frasco" placeholder="Ej: 109990" required>
-                        </div>
-                        <div>
-                            <label for="crud-volumen-frasco">Volumen Total Frasco (ml)</label>
-                            <input type="number" id="crud-volumen-frasco" placeholder="Ej: 125" required>
-                        </div>
-                    </div>
-
                     <button type="submit" id="crud-submit-btn">💾 Guardar Perfume</button>
                     <button type="button" id="crud-cancelar-btn" class="btn-cancelar" style="display: none;">Cancelar Edición</button>
                 </form>
@@ -441,15 +598,61 @@
                             <tr>
                                 <th>Nombre</th>
                                 <th>Precios (3/5/10ml)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-perfumes-body"></tbody>
+                    </table>
+                </div>
+
+                <hr>
+
+                <h2 id="lote-form-titulo">Gestión de Lotes (Inventario)</h2> <p style="color: var(--color-text-muted); margin-bottom: 24px;">
+                    Añade aquí cada frasco nuevo que compres. Esto se usará para calcular la rentabilidad y el costo por ML.
+                </p>
+
+                <form id="form-lote-crud">
+                    <input type="hidden" id="lote-edit-id"> <div class="form-grid">
+                        <div>
+                            <label for="lote-perfume-select">Perfume</label>
+                            <select id="lote-perfume-select" required>
+                                <option value="">Selecciona un perfume...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lote-fecha">Fecha de Compra</label>
+                            <input type="date" id="lote-fecha" required>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div>
+                            <label for="lote-costo-frasco">Costo Total Frasco ($)</label>
+                            <input type="number" id="lote-costo-frasco" placeholder="Ej: 109990" required>
+                        </div>
+                        <div>
+                            <label for="lote-volumen-frasco">Volumen Total Frasco (ml)</label>
+                            <input type="number" id="lote-volumen-frasco" placeholder="Ej: 125" required>
+                        </div>
+                    </div>
+                    <button type="submit" id="lote-submit-btn">➕ Añadir Lote al Inventario</button> <button type="button" id="lote-cancelar-btn" class="btn-cancelar" style="display: none;">Cancelar Edición</button> </form>
+                <hr>
+
+                <h2>Lotes en Inventario</h2>
+                <div class="table-container">
+                    <table id="tabla-lotes">
+                        <thead>
+                            <tr>
+                                <th>Perfume</th>
+                                <th>Fecha Compra</th>
+                                <th>Costo</th>
+                                <th>Volumen</th>
                                 <th>Costo/ml</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-perfumes-body">
-                            </tbody>
+                        <tbody id="tabla-lotes-body"></tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
@@ -464,9 +667,30 @@
                 <form id="form-edicion">
                     <input type="hidden" id="edit-id">
                     
-                    <label for="edit-perfume">Perfume</label>
-                    <select id="edit-perfume" required></select>
+                    <label for="edit-cliente">Nombre Cliente</label>
+                    <input type="text" id="edit-cliente" placeholder="Ej: Juan Pérez">
 
+                    <label for="edit-metodo-pago">Método de Pago</label>
+                    <select id="edit-metodo-pago" required>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Débito">Débito</option>
+                        <option value="Crédito">Crédito</option>
+                    </select>
+                    
+                    <div class="form-grid">
+                        <div>
+                            <label for="edit-perfume">Perfume</label>
+                            <select id="edit-perfume" required></select>
+                        </div>
+                        <div>
+                            <label for="edit-lote">Lote / Frasco (Inventario)</label>
+                            <select id="edit-lote" required>
+                                <option value="">Selecciona un perfume...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
                     <label for="edit-volumen">Volumen (ml)</label>
                     <select id="edit-volumen" required>
                         <option value="3">3ml</option>
@@ -479,6 +703,10 @@
                     
                     <label for="edit-fecha-venta">Fecha de Venta</label>
                     <input type="date" id="edit-fecha-venta" required>
+                    
+                    <label for="btn-seleccionar-adjunto-edit">Comprobante (Opcional)</label>
+                    <button type="button" id="btn-seleccionar-adjunto-edit" class="btn-adjuntar">📎 Cambiar Archivo...</button>
+                    <span id="edit-nombre-adjunto">No se ha seleccionado un archivo.</span>
 
                     <button type="submit">💾 Guardar Cambios</button>
                 </form>

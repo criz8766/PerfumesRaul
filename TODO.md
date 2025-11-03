@@ -1,0 +1,3 @@
+- [ ] Mover el contenedor del logo fuera del header para posicionarlo fijo
+- [ ] Actualizar estilos del logo: tamaño 80px desktop, 70px móvil, position fixed
+- [ ] Ajustar el header para compensar la ausencia del logo
