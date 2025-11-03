@@ -563,7 +563,6 @@ formEdicion.addEventListener("submit", async (e) => {
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
-    
     modalEdicion.style.display = "none"
   } else {
     alert("❌ Error al actualizar la venta: " + resultado.message)
