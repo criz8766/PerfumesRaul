@@ -677,8 +677,15 @@
             gap: 12px;
         }
 
-        .modal-header h2::before {
+        /* --- Icono para modal de edición --- */
+        #modal-edicion .modal-header h2::before {
             content: "✏️";
+            font-size: 18px;
+        }
+
+        /* --- NUEVO: Icono para modal de detalle --- */
+        #modal-detalle-pedido .modal-header h2::before {
+            content: "🧾";
             font-size: 18px;
         }
         
@@ -993,6 +1000,9 @@
         #btn-anadir-perfume-grupo:active {
             transform: scale(0.98);
         }
+
+        /* --- ESTILOS PESTAÑA PEDIDOS (MODIFICADOS) --- */
+        /* (Ya no se necesita el layout de 2 columnas) */
         
         @media (max-width: 768px) {
             .container { 
@@ -1083,12 +1093,15 @@
                     <h1>Contador Decants</h1>
                 </div>
 
-                <!-- MEJORA: Título de Menú añadido -->
                 <div class="nav-title">Menú</div>
                 <div class="nav-menu" id="nav-menu">
                     <button class="nav-button active" data-tab="tab-registro">
                         <span>📝</span>
                         <span>Registro y Gestión</span>
+                    </button>
+                    <button class="nav-button" data-tab="tab-pedidos">
+                        <span>📦</span>
+                        <span>Pedidos</span>
                     </button>
                     <button class="nav-button" data-tab="tab-resumen">
                         <span>📊</span>
@@ -1143,11 +1156,9 @@
                         <hr>
                         <h3>Perfumes en esta Venta</h3>
                         
-                        <!-- MEJORA: Wrapper para el primer perfume -->
                         <div class="perfume-form-group-wrapper">
                             <div id="perfumes-container">
-                                <!-- El primer grupo se añade aquí desde JS -->
-                            </div>
+                                </div>
                         </div>
                         
                         <button type="button" id="btn-anadir-perfume-grupo">
@@ -1159,7 +1170,10 @@
                     
                     <hr>
                     
-                    <h2>Historial de Ventas</h2>
+                    <h2>Historial de Ventas (por Ítem)</h2>
+                    <p style="color: var(--color-text-muted); margin-bottom: 24px;">
+                        Esta tabla muestra cada perfume vendido de forma individual. Para ver pedidos agrupados, ve a la pestaña "Pedidos".
+                    </p>
                     <div class="table-container">
                         <table id="tabla-ventas">
                             <thead>
@@ -1178,6 +1192,29 @@
                     </div>
                 </div>
 
+                <div id="tab-pedidos" class="tab-content">
+                    <h2>Historial de Pedidos</h2>
+                    <p style="color: var(--color-text-muted); margin-bottom: 24px;">
+                        Cada fila representa un pedido completo, agrupando todos los perfumes comprados en esa transacción.
+                    </p>
+                    
+                    <div class="table-container">
+                        <table id="tabla-pedidos">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>N° de Ítems</th>
+                                    <th>Total Pedido</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-pedidos-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div id="tab-resumen" class="tab-content">
                     
                     <div id="filtro-resumen" style="background: var(--color-surface); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; border: 1px solid var(--color-border); transition: var(--transition-fast);">
@@ -1188,7 +1225,6 @@
                     </div>
 
                     
-                    <!-- MEJORA: Aplicada la clase .resumen para grid 2x2 -->
                     <div class="resumen">
                         <div class="resumen-card">
                             <div>
@@ -1359,11 +1395,7 @@
                     </div>
                 </div>
 
-            </div> <!-- Fin .main-content -->
-        </div> <!-- Fin .main-card -->
-    </div> <!-- Fin .container -->
-
-    <div id="modal-edicion" class="modal">
+            </div> </div> </div> <div id="modal-edicion" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Editar Venta</h2>
@@ -1420,6 +1452,18 @@
         </div>
     </div>
 
+    <div id="modal-detalle-pedido" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalle del Pedido</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-detalle-body">
+                </div>
+        </div>
+    </div>
+
+
     <script>
         (function() {
             const themeToggle = document.getElementById('theme-toggle');
@@ -1459,5 +1503,3 @@
     <script src="renderer.js"></script>
 </body>
 </html>
-
-

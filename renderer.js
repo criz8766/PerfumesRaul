@@ -31,6 +31,13 @@ const editMetodoPagoSelect = document.getElementById("edit-metodo-pago")
 const btnSeleccionarAdjuntoEdit = document.getElementById("btn-seleccionar-adjunto-edit")
 const editNombreAdjuntoEl = document.getElementById("edit-nombre-adjunto")
 
+// --- NUEVO: Referencias Pestaña Pedidos ---
+const tablaPedidosBody = document.querySelector("#tabla-pedidos-body");
+const modalDetalle = document.getElementById("modal-detalle-pedido");
+const modalDetalleBody = document.getElementById("modal-detalle-body");
+const modalDetalleClose = document.querySelector("#modal-detalle-pedido .close-btn");
+
+
 // --- CAMBIO: Selectores de Navegación (antes Tabs) ---
 const navMenu = document.getElementById("nav-menu") // CAMBIADO
 const navButtons = document.querySelectorAll(".nav-button") // CAMBIADO
@@ -90,6 +97,8 @@ navMenu.addEventListener("click", (e) => { // CAMBIADO de tabMenu a navMenu
       mostrarResumenYTabla(ventas, perfumes, filtroActual)
   } else if (targetTab === "tab-rentabilidad") {
       actualizarPestañaRentabilidad();
+  } else if (targetTab === "tab-pedidos") { // --- MODIFICADO ---
+      actualizarPestañaPedidos(); // --- MODIFICADO ---
   }
 })
 
@@ -251,6 +260,7 @@ async function cargarDatosIniciales() {
     mostrarResumenYTabla(ventas, perfumes, mesActual)
     mostrarTablaCRUD(ventas)
     actualizarPestañaRentabilidad()
+    actualizarPestañaPedidos(); // --- NUEVA LÍNEA ---
     crearYAnadirGrupoPerfume();
   } catch (error) {
     console.error("Error al cargar datos:", error)
@@ -266,6 +276,10 @@ formVenta.addEventListener("submit", async (e) => {
   const cliente = clienteInput.value || 'N/A';
   const metodoPago = metodoPagoSelect.value;
   const adjunto = adjuntoTemporalPath;
+  
+  // --- NUEVO: ID de Grupo de Venta ---
+  const saleGroupId = `sale_${Date.now()}`;
+
   let isValid = true;
   let errorMsg = "";
   if (grupos.length === 0) {
@@ -288,6 +302,7 @@ formVenta.addEventListener("submit", async (e) => {
           break;
       }
       ventasAGuardar.push({
+          saleGroupId: saleGroupId, // --- NUEVA LÍNEA ---
           perfume: perfume,
           loteId: loteId,
           volumen: Number.parseInt(volumen),
@@ -311,6 +326,7 @@ formVenta.addEventListener("submit", async (e) => {
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
+    actualizarPestañaPedidos(); // --- NUEVA LÍNEA ---
     formVenta.reset()
     document.getElementById("fecha-venta").valueAsDate = new Date()
     adjuntoTemporalPath = null;
@@ -339,6 +355,8 @@ function mostrarTablaCRUD(ventasData) {
     rowCRUD.insertCell(4).textContent = venta.cliente || 'N/A';
     rowCRUD.insertCell(5).textContent = venta.metodoPago || 'N/A';
     let adjuntoBtn = '';
+    // --- MODIFICACIÓN: Comprobar si el adjunto es de esta venta o del grupo ---
+    // (No es necesario, el adjunto se guarda en cada item)
     if (venta.adjuntoPath) {
       const safePath = venta.adjuntoPath.replace(/\\/g, '\\\\');
       adjuntoBtn = `<button class="btn-ver" onclick="abrirArchivo('${safePath}')">📄 Ver</button>`;
@@ -405,17 +423,18 @@ function mostrarResumenYTabla(ventasData, perfumesData, filtro) {
 }
 async function eliminarVenta(id) {
 // ... (código existente sin cambios)
-  if (!confirm("⚠️ ¿Estás seguro de que quieres eliminar esta venta? Esta acción no se puede deshacer y también eliminará el archivo adjunto, si existe.")) return
+  if (!confirm("⚠️ ¿Estás seguro de que quieres eliminar este ítem de venta? Esta acción no se puede deshacer.")) return
   const resultado = await window.api.eliminarVenta(id)
   if (resultado.success) {
-    alert("✅ Venta eliminada con éxito.")
+    alert("✅ Ítem de venta eliminado con éxito.")
     ventas = ventas.filter((v) => v.id !== id)
     mostrarTablaCRUD(ventas);
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
+    actualizarPestañaPedidos(); // --- NUEVA LÍNEA ---
   } else {
-    alert("❌ Error al eliminar la venta: " + resultado.message)
+    alert("❌ Error al eliminar el ítem: " + resultado.message)
   }
 }
 function abrirModalEdicion(venta) {
@@ -435,45 +454,260 @@ function abrirModalEdicion(venta) {
   } else {
     editNombreAdjuntoEl.textContent = "No hay archivo adjunto."
   }
+  
+  // --- NUEVO: Deshabilitar campos de grupo ---
+  // La edición desde la tabla principal solo edita el ÍTEM, no el pedido completo.
+  editClienteInput.disabled = true;
+  editMetodoPagoSelect.disabled = true;
+  // editFechaInput.disabled = true; // edit-fecha-venta
+  document.getElementById("edit-fecha-venta").disabled = true;
+  
   modalEdicion.classList.add("active")
 }
 
 closeBtnModal.onclick = () => {
   modalEdicion.classList.remove("active")
 }
-
+// --- MODIFICADO: Cierre de ambos modales ---
 window.onclick = (event) => {
   if (event.target == modalEdicion) {
     modalEdicion.classList.remove("active")
   }
+  if (event.target == modalDetalle) { // --- NUEVA LÍNEA ---
+    modalDetalle.classList.remove("active") // --- NUEVA LÍNEA ---
+  }
 }
+
+// --- NUEVO: Cierre del modal de detalle ---
+modalDetalleClose.onclick = () => {
+  modalDetalle.classList.remove("active")
+}
+
 formEdicion.addEventListener("submit", async (e) => {
 // ... (código existente sin cambios)
   e.preventDefault()
+  
+  const ventaId = Number.parseInt(document.getElementById("edit-id").value);
+  const ventaOriginal = ventas.find(v => v.id === ventaId);
+  
   const ventaEditada = {
-    id: Number.parseInt(document.getElementById("edit-id").value),
-    cliente: editClienteInput.value || 'N/A',
-    metodoPago: editMetodoPagoSelect.value,
+    id: ventaId,
+    // --- MODIFICADO: Usar los valores originales del grupo ---
+    cliente: ventaOriginal.cliente,
+    metodoPago: ventaOriginal.metodoPago,
+    fecha: ventaOriginal.fecha,
+    saleGroupId: ventaOriginal.saleGroupId, // Mantener el group ID
+    
+    // --- Campos que sí se editan ---
     perfume: editPerfumeSelect.value,
     loteId: editLoteSelect.value,
     volumen: Number.parseInt(editVolumenSelect.value),
     precioVendido: Number.parseInt(editPrecioVendidoInput.value),
-    fecha: document.getElementById("edit-fecha-venta").value,
+    
     adjuntoTemporalPath: editAdjuntoTemporalPath,
   }
+  
+  // Si se adjuntó un nuevo archivo, usamos ese. Si no, mantenemos el original.
+  if (!editAdjuntoTemporalPath) {
+      ventaEditada.adjuntoPath = ventaOriginal.adjuntoPath;
+  }
+  
   const resultado = await window.api.actualizarVenta(ventaEditada)
   if (resultado.success) {
-    alert("✅ Venta actualizada con éxito.")
+    alert("✅ Ítem de venta actualizado con éxito.")
     ventas = await window.api.cargarVentas()
     mostrarTablaCRUD(ventas);
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
+    actualizarPestañaPedidos(); // --- NUEVA LÍNEA ---
     modalEdicion.classList.remove("active")
   } else {
-    alert("❌ Error al actualizar la venta: " + resultado.message)
+    alert("❌ Error al actualizar el ítem: " + resultado.message)
   }
 })
+
+// --- NUEVAS FUNCIONES PARA PESTAÑA PEDIDOS ---
+
+// Agrupa las ventas por 'saleGroupId'.
+// Las ventas antiguas sin ID de grupo se tratarán como un pedido de un solo ítem.
+function agruparPedidos(ventasData) {
+    const pedidosMap = {};
+    
+    ventasData.forEach(venta => {
+        // --- ★★★ ESTA ES LA LÍNEA MODIFICADA ★★★ ---
+        // Los datos nuevos se agrupan por saleGroupId.
+        // Los datos antiguos (sin saleGroupId) se agrupan por una combinación
+        // de fecha, cliente y adjunto. Esto asume que todos los ítems
+        // de un pedido antiguo se registraron con estos 3 datos idénticos.
+        const groupId = venta.saleGroupId || `legacy_${venta.fecha}_${(venta.cliente || 'N/A')}_${(venta.adjuntoPath || 'null')}`;
+        // --- ★★★ FIN DE LA MODIFICACIÓN ★★★ ---
+        
+        if (!pedidosMap[groupId]) {
+            pedidosMap[groupId] = {
+                groupId: groupId,
+                cliente: venta.cliente,
+                fecha: venta.fecha,
+                metodoPago: venta.metodoPago,
+                adjuntoPath: venta.adjuntoPath, // Tomar el adjunto (será el mismo para todos)
+                items: [],
+                totalVenta: 0
+            };
+        }
+        
+        pedidosMap[groupId].items.push(venta);
+        pedidosMap[groupId].totalVenta += venta.precioVendido;
+    });
+    
+    // Convertir el mapa a un array y ordenar por fecha (más reciente primero)
+    return Object.values(pedidosMap).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+}
+
+function actualizarPestañaPedidos() {
+    tablaPedidosBody.innerHTML = "";
+    const pedidosAgrupados = agruparPedidos(ventas);
+
+    if (pedidosAgrupados.length === 0) {
+        tablaPedidosBody.innerHTML =
+          '<tr><td colspan="5" style="text-align: center; padding: 48px; color: var(--color-text-muted);">📭 No hay pedidos registrados aún</td></tr>';
+        return;
+    }
+
+    pedidosAgrupados.forEach(pedido => {
+        const row = tablaPedidosBody.insertRow();
+        row.insertCell(0).textContent = pedido.fecha;
+        row.insertCell(1).textContent = pedido.cliente || 'N/A';
+        row.insertCell(2).textContent = pedido.items.length;
+        row.insertCell(3).textContent = `$${pedido.totalVenta.toLocaleString("es-CL")}`;
+        
+        // Convertir el groupId a un string seguro para HTML
+        const safeGroupId = JSON.stringify(pedido.groupId).replace(/"/g, "&quot;");
+        
+        const cellAcciones = row.insertCell(4);
+        cellAcciones.innerHTML = `
+            <div class="action-buttons">
+                <button class="btn-ver" onclick="mostrarDetallePedido(${safeGroupId})">Ver Detalle</button>
+                </div>
+        `;
+    });
+}
+
+function mostrarDetallePedido(groupId) {
+    const pedidosAgrupados = agruparPedidos(ventas);
+    const pedido = pedidosAgrupados.find(p => p.groupId === groupId);
+
+    if (!pedido) {
+        modalDetalleBody.innerHTML = "<p>Error: No se encontró el pedido.</p>";
+        modalDetalle.classList.add("active");
+        return;
+    }
+
+    // Construir el HTML del modal
+    let html = `
+        <div class="resumen" style="grid-template-columns: 1fr; margin-bottom: 24px;">
+            <div class="resumen-card">
+                <div>
+                    <div class="resumen-label">Cliente</div>
+                    <div class="resumen-value" style="font-size: 18px;">${pedido.cliente}</div>
+                </div>
+            </div>
+            <div class="resumen-card">
+                <div>
+                    <div class="resumen-label">Método de Pago</div>
+                    <div class="resumen-value" style="font-size: 18px;">${pedido.metodoPago}</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Comprobante
+    if (pedido.adjuntoPath) {
+        const safePath = pedido.adjuntoPath.replace(/\\/g, '\\\\');
+        html += `
+            <label>Comprobante de Pago</label>
+            <button type="button" class="btn-adjuntar" style="width: 100%;" onclick="abrirArchivo('${safePath}')">
+                📄 Ver Comprobante
+            </button>
+            <hr>
+        `;
+    } else {
+        html += `<hr>`;
+    }
+
+    // Tabla de ítems
+    html += '<h3>Ítems del Pedido</h3>';
+    html += '<div class="table-container" style="margin-top: 16px;"><table>';
+    html += `
+        <thead>
+            <tr>
+                <th>Perfume</th>
+                <th>Volumen</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+    `;
+    html += '<tbody>';
+    pedido.items.forEach(item => {
+        html += `
+            <tr>
+                <td>${item.perfume}</td>
+                <td>${item.volumen}ml</td>
+                <td>$${item.precioVendido.toLocaleString("es-CL")}</td>
+            </tr>
+        `;
+    });
+    html += '</tbody></table></div>';
+    
+    // Total
+    html += `
+        <h3 style="text-align: right; margin-top: 24px; border: none; padding: 0;">
+            Total Pedido: 
+            <span style="color: var(--color-success);">$${pedido.totalVenta.toLocaleString("es-CL")}</span>
+        </h3>
+    `;
+
+    modalDetalleBody.innerHTML = html;
+    modalDetalle.classList.add("active");
+}
+
+// Opcional: Función para eliminar un pedido completo (requiere bucle)
+async function eliminarPedido(groupId) {
+    if (!confirm("⚠️ ¿Estás seguro de que quieres eliminar este PEDIDO COMPLETO? Todos sus ítems serán borrados.")) return;
+    
+    const pedidosAgrupados = agruparPedidos(ventas);
+    const pedido = pedidosAgrupados.find(p => p.groupId === groupId);
+    
+    if (!pedido) {
+        alert("Error al encontrar el pedido.");
+        return;
+    }
+    
+    let todosExitosos = true;
+    
+    for (const item of pedido.items) {
+        const resultado = await window.api.eliminarVenta(item.id);
+        if (!resultado.success) {
+            todosExitosos = false;
+        }
+    }
+
+    if (todosExitosos) {
+        alert("✅ Pedido completo eliminado con éxito.");
+    } else {
+        alert("⚠️ Algunos ítems no se pudieron eliminar. Refresca la aplicación.");
+    }
+
+    // Recargar datos
+    ventas = await window.api.cargarVentas();
+    mostrarTablaCRUD(ventas);
+    const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
+    mostrarResumenYTabla(ventas, perfumes, filtroActual)
+    actualizarPestañaRentabilidad()
+    actualizarPestañaPedidos();
+}
+
+// -------------------------------------------
+
 function actualizarPestañaRentabilidad() {
 // ... (código existente sin cambios)
   tablaRentabilidadBody.innerHTML = "";
@@ -944,3 +1178,6 @@ window.eliminarPerfume = eliminarPerfume
 window.abrirArchivo = abrirArchivo
 window.eliminarLote = eliminarLote
 window.modoEditarLote = modoEditarLote
+// --- NUEVO: Exponer funciones de pedidos ---
+window.mostrarDetallePedido = mostrarDetallePedido;
+window.eliminarPedido = eliminarPedido; // Exponer la función de eliminar pedido completo
