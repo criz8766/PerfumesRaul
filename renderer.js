@@ -5,6 +5,12 @@ const tablaVentasBody = document.querySelector("#tabla-ventas tbody")
 // ... (el resto de las referencias DOM)
 const clienteInput = document.getElementById("cliente")
 const metodoPagoSelect = document.getElementById("metodo-pago")
+
+// --- NUEVO: Referencias de Reparto ---
+const repartoSelect = document.getElementById("reparto-select");
+const repartoPrecioGroup = document.getElementById("reparto-precio-group");
+const repartoPrecioInput = document.getElementById("reparto-precio");
+
 const btnSeleccionarAdjunto = document.getElementById("btn-seleccionar-adjunto")
 const nombreAdjuntoEl = document.getElementById("nombre-adjunto")
 const perfumesContainer = document.getElementById("perfumes-container")
@@ -21,7 +27,7 @@ const btnExportarExcel = document.getElementById("btn-exportar-excel");
 const tablaRentabilidadBody = document.getElementById("tabla-rentabilidad-body");
 const modalEdicion = document.getElementById("modal-edicion")
 const formEdicion = document.getElementById("form-edicion")
-const closeBtnModal = document.querySelector(".close-btn")
+const closeBtnModal = document.querySelector("#modal-edicion .close-btn") // --- MODIFICADO: Selector más específico ---
 const editPerfumeSelect = document.getElementById("edit-perfume")
 const editLoteSelect = document.getElementById("edit-lote")
 const editVolumenSelect = document.getElementById("edit-volumen")
@@ -101,6 +107,17 @@ navMenu.addEventListener("click", (e) => { // CAMBIADO de tabMenu a navMenu
       actualizarPestañaPedidos(); // --- MODIFICADO ---
   }
 })
+
+// --- NUEVO: Listener para mostrar/ocultar precio de reparto ---
+// (Coloca esto cerca de otros listeners, antes de cargarDatosIniciales)
+repartoSelect.addEventListener("change", () => {
+    if (repartoSelect.value === "si") {
+        repartoPrecioGroup.style.display = "block";
+    } else {
+        repartoPrecioGroup.style.display = "none";
+        repartoPrecioInput.value = ""; // Limpiar por si acaso
+    }
+});
 
 // ----------------------------------------------------
 // INICIALIZACIÓN Y LÓGICA DE REGISTRO DE VENTA (NUEVO)
@@ -267,8 +284,9 @@ async function cargarDatosIniciales() {
     alert("Error al cargar datos de ventas o perfumes.")
   }
 }
+
+// --- MODIFICADO: Lógica de envío del formulario ---
 formVenta.addEventListener("submit", async (e) => {
-// ... (código existente sin cambios)
   e.preventDefault()
   const ventasAGuardar = [];
   const grupos = perfumesContainer.querySelectorAll('.perfume-form-group');
@@ -277,48 +295,79 @@ formVenta.addEventListener("submit", async (e) => {
   const metodoPago = metodoPagoSelect.value;
   const adjunto = adjuntoTemporalPath;
   
-  // --- NUEVO: ID de Grupo de Venta ---
   const saleGroupId = `sale_${Date.now()}`;
 
-  let isValid = true;
-  let errorMsg = "";
-  if (grupos.length === 0) {
-      isValid = false;
-      errorMsg = "❌ Debes añadir al menos un perfume a la venta.";
-  }
+  let isValid = true; // Asumir validez
+  
   if (!fecha) {
-      isValid = false;
-      errorMsg = "❌ Por favor, selecciona una fecha de venta.";
+      alert("❌ Por favor, selecciona una fecha de venta.");
+      return;
   }
+
+  // 1. Recoger los perfumes
   for (const groupEl of grupos) {
-      if (!isValid) break;
       const perfume = groupEl.querySelector('.select-perfume').value;
       const loteId = groupEl.querySelector('.select-lote').value;
       const volumen = groupEl.querySelector('.select-volumen').value;
       const precio = groupEl.querySelector('.input-precio').value;
-      if (!perfume || !loteId || !precio || Number(precio) <= 0) {
-          isValid = false;
-          errorMsg = `❌ Revisa los datos del perfume "${perfume || '??'}". Todos los campos son obligatorios.`;
-          break;
+      
+      // Si el perfume está seleccionado, el resto es obligatorio.
+      if (perfume) { 
+          if (!loteId || !precio || Number(precio) <= 0) {
+              isValid = false;
+              alert(`❌ Revisa los datos del perfume "${perfume || '??'}". Lote y Precio son obligatorios.`);
+              break;
+          }
+          ventasAGuardar.push({
+              saleGroupId: saleGroupId,
+              perfume: perfume,
+              loteId: loteId,
+              volumen: Number.parseInt(volumen),
+              precioVendido: Number.parseInt(precio),
+              adjuntoTemporalPath: adjunto,
+              adjuntoPath: null,
+              fecha: fecha,
+              cliente: cliente,
+              metodoPago: metodoPago,
+          });
       }
+  }
+
+  if (!isValid) return; // Salir si un perfume estaba mal llenado
+
+  // 2. Recoger el reparto
+  if (repartoSelect.value === "si") {
+      const precioReparto = Number.parseInt(repartoPrecioInput.value) || 0;
+      
+      if (precioReparto <= 0) {
+           alert("❌ Seleccionaste 'Sí' para reparto, pero no has introducido un precio válido. No se registrará la venta.");
+           return; // Forzar a poner precio si dice 'si'
+      }
+
+      // Añadir el reparto como un ítem más
       ventasAGuardar.push({
-          saleGroupId: saleGroupId, // --- NUEVA LÍNEA ---
-          perfume: perfume,
-          loteId: loteId,
-          volumen: Number.parseInt(volumen),
-          precioVendido: Number.parseInt(precio),
-          adjuntoTemporalPath: adjunto,
+          saleGroupId: saleGroupId,
+          perfume: "Costo de Reparto", // Nombre especial
+          loteId: "N/A", // No aplica
+          volumen: 0, // No aplica
+          precioVendido: precioReparto,
+          adjuntoTemporalPath: adjunto, // Compartir el mismo adjunto
           adjuntoPath: null,
           fecha: fecha,
           cliente: cliente,
           metodoPago: metodoPago,
       });
   }
-  if (!isValid) {
-      alert(errorMsg);
+
+  // 3. Validación final: ¿Hay algo que guardar?
+  if (ventasAGuardar.length === 0) {
+      alert("❌ No hay nada que registrar. Añade al menos un perfume o un costo de reparto.");
       return;
   }
+
+  // 4. Guardar
   const resultado = await window.api.guardarMultiplesVentas(ventasAGuardar);
+  
   if (resultado.success) {
     alert(`✅ ¡${resultado.message}`);
     ventas = await window.api.cargarVentas()
@@ -326,8 +375,16 @@ formVenta.addEventListener("submit", async (e) => {
     const filtroActual = resumenTituloEl.textContent.includes("Total") ? "total" : filtroMesInput.value
     mostrarResumenYTabla(ventas, perfumes, filtroActual)
     actualizarPestañaRentabilidad()
-    actualizarPestañaPedidos(); // --- NUEVA LÍNEA ---
+    actualizarPestañaPedidos();
+    
     formVenta.reset()
+
+    // --- NUEVO: Resetear campos de reparto ---
+    repartoSelect.value = "no";
+    repartoPrecioGroup.style.display = "none";
+    repartoPrecioInput.value = "";
+    // --- Fin reset ---
+
     document.getElementById("fecha-venta").valueAsDate = new Date()
     adjuntoTemporalPath = null;
     nombreAdjuntoEl.textContent = "No se ha seleccionado un archivo.";
@@ -459,19 +516,46 @@ function abrirModalEdicion(venta) {
   // La edición desde la tabla principal solo edita el ÍTEM, no el pedido completo.
   editClienteInput.disabled = true;
   editMetodoPagoSelect.disabled = true;
-  // editFechaInput.disabled = true; // edit-fecha-venta
   document.getElementById("edit-fecha-venta").disabled = true;
+
+  // --- NUEVO: Deshabilitar edición si es un ítem de reparto ---
+  if (venta.perfume === "Costo de Reparto") {
+      editPerfumeSelect.disabled = true;
+      editLoteSelect.disabled = true;
+      editVolumenSelect.disabled = true;
+  } else {
+      editPerfumeSelect.disabled = false;
+      editLoteSelect.disabled = false;
+      editVolumenSelect.disabled = false;
+  }
   
   modalEdicion.classList.add("active")
 }
 
 closeBtnModal.onclick = () => {
   modalEdicion.classList.remove("active")
+  
+  // --- BUGFIX: Reactivar campos al cerrar ---
+  editClienteInput.disabled = false;
+  editMetodoPagoSelect.disabled = false;
+  document.getElementById("edit-fecha-venta").disabled = false;
+  // --- NUEVO: Reactivar campos de perfume ---
+  editPerfumeSelect.disabled = false;
+  editLoteSelect.disabled = false;
+  editVolumenSelect.disabled = false;
 }
 // --- MODIFICADO: Cierre de ambos modales ---
 window.onclick = (event) => {
   if (event.target == modalEdicion) {
     modalEdicion.classList.remove("active")
+    // --- BUGFIX: Reactivar campos al cerrar ---
+    editClienteInput.disabled = false;
+    editMetodoPagoSelect.disabled = false;
+    document.getElementById("edit-fecha-venta").disabled = false;
+    // --- NUEVO: Reactivar campos de perfume ---
+    editPerfumeSelect.disabled = false;
+    editLoteSelect.disabled = false;
+    editVolumenSelect.disabled = false;
   }
   if (event.target == modalDetalle) { // --- NUEVA LÍNEA ---
     modalDetalle.classList.remove("active") // --- NUEVA LÍNEA ---
@@ -490,26 +574,28 @@ formEdicion.addEventListener("submit", async (e) => {
   const ventaId = Number.parseInt(document.getElementById("edit-id").value);
   const ventaOriginal = ventas.find(v => v.id === ventaId);
   
-  const ventaEditada = {
-    id: ventaId,
-    // --- MODIFICADO: Usar los valores originales del grupo ---
-    cliente: ventaOriginal.cliente,
-    metodoPago: ventaOriginal.metodoPago,
-    fecha: ventaOriginal.fecha,
-    saleGroupId: ventaOriginal.saleGroupId, // Mantener el group ID
-    
-    // --- Campos que sí se editan ---
-    perfume: editPerfumeSelect.value,
-    loteId: editLoteSelect.value,
-    volumen: Number.parseInt(editVolumenSelect.value),
+  let ventaEditada = {
+    ...ventaOriginal, // Copiar todos los campos originales
+    // Sobrescribir solo los campos editables
     precioVendido: Number.parseInt(editPrecioVendidoInput.value),
-    
     adjuntoTemporalPath: editAdjuntoTemporalPath,
+  };
+
+  // Si no es un ítem de reparto, actualizar también el perfume/lote/volumen
+  if (ventaOriginal.perfume !== "Costo de Reparto") {
+      ventaEditada = {
+          ...ventaEditada,
+          perfume: editPerfumeSelect.value,
+          loteId: editLoteSelect.value,
+          volumen: Number.parseInt(editVolumenSelect.value),
+      };
   }
   
   // Si se adjuntó un nuevo archivo, usamos ese. Si no, mantenemos el original.
   if (!editAdjuntoTemporalPath) {
       ventaEditada.adjuntoPath = ventaOriginal.adjuntoPath;
+  } else {
+      delete ventaEditada.adjuntoTemporalPath; // Asegurarse que el handler lo procese
   }
   
   const resultado = await window.api.actualizarVenta(ventaEditada)
@@ -522,6 +608,16 @@ formEdicion.addEventListener("submit", async (e) => {
     actualizarPestañaRentabilidad()
     actualizarPestañaPedidos(); // --- NUEVA LÍNEA ---
     modalEdicion.classList.remove("active")
+    
+    // --- BUGFIX: Reactivar campos al guardar ---
+    editClienteInput.disabled = false;
+    editMetodoPagoSelect.disabled = false;
+    document.getElementById("edit-fecha-venta").disabled = false;
+    // --- NUEVO: Reactivar campos de perfume ---
+    editPerfumeSelect.disabled = false;
+    editLoteSelect.disabled = false;
+    editVolumenSelect.disabled = false;
+    
   } else {
     alert("❌ Error al actualizar el ítem: " + resultado.message)
   }
@@ -535,13 +631,8 @@ function agruparPedidos(ventasData) {
     const pedidosMap = {};
     
     ventasData.forEach(venta => {
-        // --- ★★★ ESTA ES LA LÍNEA MODIFICADA ★★★ ---
-        // Los datos nuevos se agrupan por saleGroupId.
-        // Los datos antiguos (sin saleGroupId) se agrupan por una combinación
-        // de fecha, cliente y adjunto. Esto asume que todos los ítems
-        // de un pedido antiguo se registraron con estos 3 datos idénticos.
+        // --- ★★★ ESTA ES LA LÍNEA MODIFICADA PARA DATOS ANTIGUOS ★★★ ---
         const groupId = venta.saleGroupId || `legacy_${venta.fecha}_${(venta.cliente || 'N/A')}_${(venta.adjuntoPath || 'null')}`;
-        // --- ★★★ FIN DE LA MODIFICACIÓN ★★★ ---
         
         if (!pedidosMap[groupId]) {
             pedidosMap[groupId] = {
@@ -549,9 +640,10 @@ function agruparPedidos(ventasData) {
                 cliente: venta.cliente,
                 fecha: venta.fecha,
                 metodoPago: venta.metodoPago,
-                adjuntoPath: venta.adjuntoPath, // Tomar el adjunto (será el mismo para todos)
+                adjuntoPath: venta.adjuntoPath,
                 items: [],
-                totalVenta: 0
+                totalVenta: 0,
+                costoReparto: 0 // --- NUEVA LÍNEA ---
             };
         }
         
@@ -559,6 +651,24 @@ function agruparPedidos(ventasData) {
         pedidosMap[groupId].totalVenta += venta.precioVendido;
     });
     
+    // --- NUEVO: Post-procesamiento para extraer el reparto ---
+    // Iteramos sobre el mapa de pedidos ya agrupados
+    Object.values(pedidosMap).forEach(pedido => {
+        // Buscamos si un ítem es "Costo de Reparto"
+        const repartoItemIndex = pedido.items.findIndex(item => item.perfume === "Costo de Reparto");
+        
+        if (repartoItemIndex > -1) {
+            // Si lo encontramos...
+            // 1. Lo sacamos del array 'items' (para que el conteo de ítems sea correcto)
+            const [repartoItem] = pedido.items.splice(repartoItemIndex, 1);
+            
+            // 2. Guardamos su valor en la nueva propiedad
+            pedido.costoReparto = repartoItem.precioVendido;
+        }
+        // 'pedido.totalVenta' ya es correcto porque sumó todo, incluido el reparto.
+        // 'pedido.items.length' ahora es correcto porque ya no incluye el reparto.
+    });
+
     // Convertir el mapa a un array y ordenar por fecha (más reciente primero)
     return Object.values(pedidosMap).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 }
@@ -577,10 +687,27 @@ function actualizarPestañaPedidos() {
         const row = tablaPedidosBody.insertRow();
         row.insertCell(0).textContent = pedido.fecha;
         row.insertCell(1).textContent = pedido.cliente || 'N/A';
-        row.insertCell(2).textContent = pedido.items.length;
-        row.insertCell(3).textContent = `$${pedido.totalVenta.toLocaleString("es-CL")}`;
+        // El N° de Ítems ahora es correcto gracias al cambio en agruparPedidos
+        row.insertCell(2).textContent = pedido.items.length; 
         
-        // Convertir el groupId a un string seguro para HTML
+        // --- MODIFICADO: Celda de Total para mostrar desglose ---
+        const cellTotal = row.insertCell(3);
+        if (pedido.costoReparto > 0) {
+            // Si hay reparto, calculamos el subtotal de productos
+            const subtotalProductos = pedido.totalVenta - pedido.costoReparto;
+            cellTotal.style.lineHeight = "1.4"; // Un poco más de espacio
+            cellTotal.innerHTML = `
+                $${subtotalProductos.toLocaleString("es-CL")} (Prod.)
+                + $${pedido.costoReparto.toLocaleString("es-CL")} (Rep.)
+                <br>
+                <strong style="color: var(--color-text-light);">$${pedido.totalVenta.toLocaleString("es-CL")} (Total)</strong>
+            `;
+        } else {
+            // Si no hay reparto, solo mostramos el total
+            cellTotal.textContent = `$${pedido.totalVenta.toLocaleString("es-CL")}`;
+        }
+        // --- FIN DE MODIFICACIÓN ---
+
         const safeGroupId = JSON.stringify(pedido.groupId).replace(/"/g, "&quot;");
         
         const cellAcciones = row.insertCell(4);
@@ -594,6 +721,10 @@ function actualizarPestañaPedidos() {
 
 function mostrarDetallePedido(groupId) {
     const pedidosAgrupados = agruparPedidos(ventas);
+    // VOLVEMOS a agrupar los pedidos (con el reparto ya extraído),
+    // pero para el modal NECESITAMOS el ítem de reparto DENTRO de la lista.
+    
+    // Así que buscamos en el 'pedidosAgrupados' (que no tiene el reparto en .items)
     const pedido = pedidosAgrupados.find(p => p.groupId === groupId);
 
     if (!pedido) {
@@ -601,28 +732,48 @@ function mostrarDetallePedido(groupId) {
         modalDetalle.classList.add("active");
         return;
     }
+    
+    // --- RE-CONSTRUIR el pedido para el modal ---
+    // Copiamos los items (que no tienen el reparto)
+    const itemsParaModal = [...pedido.items];
+    // Y si hay costo de reparto, lo volvemos a añadir como un ítem FALSO
+    // solo para que el modal y el PDF lo muestren en la tabla.
+    if (pedido.costoReparto > 0) {
+        itemsParaModal.push({
+            perfume: "Costo de Reparto",
+            volumen: 0,
+            precioVendido: pedido.costoReparto
+        });
+    }
+    
+    // Creamos un objeto 'pedidoParaModal' que el PDF pueda entender
+    const pedidoParaModal = {
+        ...pedido,
+        items: itemsParaModal 
+        // .totalVenta ya es correcto y incluye el reparto
+    };
 
-    // Construir el HTML del modal
+    // --- HTML base del modal ---
     let html = `
         <div class="resumen" style="grid-template-columns: 1fr; margin-bottom: 24px;">
             <div class="resumen-card">
                 <div>
                     <div class="resumen-label">Cliente</div>
-                    <div class="resumen-value" style="font-size: 18px;">${pedido.cliente}</div>
+                    <div class="resumen-value" style="font-size: 18px;">${pedidoParaModal.cliente}</div>
                 </div>
             </div>
             <div class="resumen-card">
                 <div>
                     <div class="resumen-label">Método de Pago</div>
-                    <div class="resumen-value" style="font-size: 18px;">${pedido.metodoPago}</div>
+                    <div class="resumen-value" style="font-size: 18px;">${pedidoParaModal.metodoPago}</div>
                 </div>
             </div>
         </div>
     `;
 
-    // Comprobante
-    if (pedido.adjuntoPath) {
-        const safePath = pedido.adjuntoPath.replace(/\\/g, '\\\\');
+    // --- Comprobante ---
+    if (pedidoParaModal.adjuntoPath) {
+        const safePath = pedidoParaModal.adjuntoPath.replace(/\\/g, '\\\\');
         html += `
             <label>Comprobante de Pago</label>
             <button type="button" class="btn-adjuntar" style="width: 100%;" onclick="abrirArchivo('${safePath}')">
@@ -634,7 +785,7 @@ function mostrarDetallePedido(groupId) {
         html += `<hr>`;
     }
 
-    // Tabla de ítems
+    // --- Tabla de ítems ---
     html += '<h3>Ítems del Pedido</h3>';
     html += '<div class="table-container" style="margin-top: 16px;"><table>';
     html += `
@@ -647,44 +798,108 @@ function mostrarDetallePedido(groupId) {
         </thead>
     `;
     html += '<tbody>';
-    pedido.items.forEach(item => {
+    
+    // Usamos 'pedidoParaModal.items' que SÍ incluye el reparto
+    pedidoParaModal.items.forEach(item => {
         html += `
             <tr>
                 <td>${item.perfume}</td>
-                <td>${item.volumen}ml</td>
+                <td>${item.volumen > 0 ? item.volumen + 'ml' : 'N/A'}</td>
                 <td>$${item.precioVendido.toLocaleString("es-CL")}</td>
             </tr>
         `;
     });
     html += '</tbody></table></div>';
     
-    // Total
+    // --- Total ---
     html += `
         <h3 style="text-align: right; margin-top: 24px; border: none; padding: 0;">
             Total Pedido: 
-            <span style="color: var(--color-success);">$${pedido.totalVenta.toLocaleString("es-CL")}</span>
+            <span style="color: var(--color-success);">$${pedidoParaModal.totalVenta.toLocaleString("es-CL")}</span>
         </h3>
     `;
 
+    // --- MODIFICADO: Botones de Acción (Añadimos "Previsualizar") ---
+    html += `
+        <button type="button" id="btn-modal-preview" class="btn-ver" style="margin-top: 24px; width: 100%; background-color: var(--color-warning); color: var(--color-warning-text);">
+            👁️ Previsualizar Ticket
+        </button>
+        <div class="form-grid" style="margin-top: 16px; gap: 16px;">
+            <button type="button" id="btn-modal-guardar-pdf" class="btn-cancelar" style="margin-top: 0; width: 100%;">
+                💾 Guardar PDF
+            </button>
+            <button type="button" id="btn-modal-imprimir" class="btn-ver" style="margin-top: 0; width: 100%; background-color: var(--color-primary); color: var(--color-primary-text);">
+                🖨️ Imprimir Ticket
+            </button>
+        </div>
+    `;
+
     modalDetalleBody.innerHTML = html;
+    
+    // --- MODIFICADO: Añadir Event Listeners ---
+    
+    // --- NUEVO: Listener para el botón de previsualización ---
+    modalDetalleBody.querySelector('#btn-modal-preview').addEventListener('click', async (e) => {
+        e.target.disabled = true;
+        e.target.textContent = "Cargando...";
+        
+        // Llamamos a la nueva función del preload (usando pedidoParaModal)
+        const resultado = await window.api.previewTicket(pedidoParaModal);
+        
+        if (!resultado.success) {
+            alert(resultado.message);
+        }
+        e.target.disabled = false;
+        e.target.textContent = "👁️ Previsualizar Ticket";
+        // No cerramos el modal de detalle, solo se abre la previsualización
+    });
+
+    // --- Listeners existentes (usando pedidoParaModal) ---
+    modalDetalleBody.querySelector('#btn-modal-guardar-pdf').addEventListener('click', async (e) => {
+        e.target.disabled = true;
+        e.target.textContent = "Guardando...";
+        const resultado = await window.api.guardarTicket(pedidoParaModal);
+        if (!resultado.success) {
+            alert(resultado.message);
+        }
+        e.target.disabled = false;
+        e.target.textContent = "💾 Guardar PDF";
+        modalDetalle.classList.remove("active"); // Cerrar modal después de guardar
+    });
+
+    modalDetalleBody.querySelector('#btn-modal-imprimir').addEventListener('click', async (e) => {
+        e.target.disabled = true;
+        e.target.textContent = "Imprimiendo...";
+        const resultado = await window.api.imprimirTicket(pedidoParaModal);
+        alert(resultado.message); // Informar al usuario
+        e.target.disabled = false;
+        e.target.textContent = "🖨️ Imprimir Ticket";
+    });
+
     modalDetalle.classList.add("active");
 }
+
 
 // Opcional: Función para eliminar un pedido completo (requiere bucle)
 async function eliminarPedido(groupId) {
     if (!confirm("⚠️ ¿Estás seguro de que quieres eliminar este PEDIDO COMPLETO? Todos sus ítems serán borrados.")) return;
     
-    const pedidosAgrupados = agruparPedidos(ventas);
-    const pedido = pedidosAgrupados.find(p => p.groupId === groupId);
+    // --- MODIFICADO ---
+    // Usamos las ventas brutas para encontrar los ítems, no los pedidos agrupados
+    const itemsAEliminar = ventas.filter(v => 
+        (v.saleGroupId === groupId) || 
+        // Caso legacy (datos antiguos)
+        (v.saleGroupId === undefined && `legacy_${v.fecha}_${(v.cliente || 'N/A')}_${(v.adjuntoPath || 'null')}` === groupId)
+    );
     
-    if (!pedido) {
-        alert("Error al encontrar el pedido.");
+    if (itemsAEliminar.length === 0) {
+        alert("Error al encontrar los ítems del pedido.");
         return;
     }
     
     let todosExitosos = true;
     
-    for (const item of pedido.items) {
+    for (const item of itemsAEliminar) {
         const resultado = await window.api.eliminarVenta(item.id);
         if (!resultado.success) {
             todosExitosos = false;
@@ -889,9 +1104,15 @@ function poblarTablaLotes() {
     tablaLotesBody.innerHTML = "";
     let hayLotes = false;
     Object.keys(perfumes).sort().forEach(nombre => {
-        if (perfumes[nombre].lotes && perfumes[nombre].lotes.length > 0) {
+        
+        // ▼▼▼ CORRECCIÓN AÑADIDA ▼▼▼
+        const perfumeData = perfumes[nombre]; 
+
+        if (perfumeData.lotes && perfumeData.lotes.length > 0) {
             hayLotes = true;
-            perfumes[nombre].lotes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach(lote => {
+            
+            // ▼▼▼ CORRECCIÓN AÑADIDA (usar perfumeData) ▼▼▼
+            perfumeData.lotes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach(lote => {
                 const costoPorMl = (lote.costo > 0 && lote.volumen > 0) ? (lote.costo / lote.volumen).toFixed(0) : "N/A";
                 const row = tablaLotesBody.insertRow();
                 row.insertCell(0).textContent = nombre;

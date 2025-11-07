@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld("api", {
   // CRUD Ventas
   cargarVentas: () => ipcRenderer.invoke("cargar-ventas"),
   guardarVenta: (datosVenta) => ipcRenderer.invoke("guardar-venta", datosVenta),
-  guardarMultiplesVentas: (ventas) => ipcRenderer.invoke("guardar-multiples-ventas", ventas), // --- NUEVO ---
+  guardarMultiplesVentas: (ventas) => ipcRenderer.invoke("guardar-multiples-ventas", ventas),
   actualizarVenta: (datosVenta) => ipcRenderer.invoke("actualizar-venta", datosVenta),
   eliminarVenta: (ventaId) => ipcRenderer.invoke("eliminar-venta", ventaId),
 
@@ -16,8 +16,13 @@ contextBridge.exposeInMainWorld("api", {
   seleccionarArchivo: () => ipcRenderer.invoke("seleccionar-archivo"),
   abrirArchivo: (path) => ipcRenderer.invoke("abrir-archivo", path),
 
-  // --- NUEVO: Handler de Exportación ---
+  // Handler de Exportación
   exportarExcel: (datos) => ipcRenderer.invoke("exportar-excel", datos),
+
+  // --- NUEVO: Handlers de Ticket PDF ---
+  guardarTicket: (pedido) => ipcRenderer.invoke("guardar-ticket", pedido),
+  imprimirTicket: (pedido) => ipcRenderer.invoke("imprimir-ticket", pedido),
+  previewTicket: (pedido) => ipcRenderer.invoke("preview-ticket", pedido),
 
   // Control de Ventana
   closeApp: () => ipcRenderer.send("app:close"),
